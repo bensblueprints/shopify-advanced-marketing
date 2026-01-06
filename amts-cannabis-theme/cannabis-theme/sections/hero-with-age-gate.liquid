@@ -1,0 +1,993 @@
+{% comment %}
+  Hero Section with Age Verification Gate
+  Cannabis-compliant landing section with age verification
+{% endcomment %}
+
+{% assign age_verified = false %}
+{% comment %} Check if age verification cookie exists - this will be handled by JS {% endcomment %}
+
+<section class="hero-section" id="hero-section">
+  {% comment %} Age Gate Overlay {% endcomment %}
+  <div class="age-gate-overlay" id="age-gate-overlay">
+    <div class="age-gate-modal">
+      <div class="age-gate-content">
+        {% if section.settings.logo %}
+          <img
+            src="{{ section.settings.logo | img_url: '200x' }}"
+            alt="{{ shop.name }}"
+            class="age-gate-logo"
+            loading="eager"
+          >
+        {% else %}
+          <div class="age-gate-icon">
+            <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+              <circle cx="32" cy="32" r="28" stroke="currentColor" stroke-width="3"/>
+              <path d="M32 20v16M32 44h.01" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+            </svg>
+          </div>
+        {% endif %}
+
+        <h2 class="age-gate-title">{{ section.settings.age_gate_title | default: 'Age Verification Required' }}</h2>
+        <p class="age-gate-subtitle">{{ section.settings.age_gate_subtitle | default: 'You must be 21 years or older to enter this website.' }}</p>
+
+        <div class="age-gate-form">
+          {% if section.settings.age_verification_type == 'simple' %}
+            <p class="age-gate-question">{{ section.settings.age_gate_question | default: 'Are you 21 years of age or older?' }}</p>
+            <div class="age-gate-buttons">
+              <button class="btn-age-yes" onclick="verifyAge(true)">
+                {{ section.settings.yes_button_text | default: 'Yes, I am 21+' }}
+              </button>
+              <button class="btn-age-no" onclick="verifyAge(false)">
+                {{ section.settings.no_button_text | default: 'No, I am under 21' }}
+              </button>
+            </div>
+          {% elsif section.settings.age_verification_type == 'date' %}
+            <p class="age-gate-question">Please enter your date of birth:</p>
+            <div class="age-gate-date-inputs">
+              <div class="date-input-group">
+                <label for="age-month">Month</label>
+                <select id="age-month" class="date-input">
+                  <option value="">MM</option>
+                  {% for i in (1..12) %}
+                    <option value="{{ i }}">{{ i | prepend: '0' | slice: -2, 2 }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="date-input-group">
+                <label for="age-day">Day</label>
+                <select id="age-day" class="date-input">
+                  <option value="">DD</option>
+                  {% for i in (1..31) %}
+                    <option value="{{ i }}">{{ i | prepend: '0' | slice: -2, 2 }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="date-input-group">
+                <label for="age-year">Year</label>
+                <select id="age-year" class="date-input">
+                  <option value="">YYYY</option>
+                  {% assign current_year = 'now' | date: '%Y' | plus: 0 %}
+                  {% assign start_year = current_year | minus: 100 %}
+                  {% for year in (start_year..current_year) reversed %}
+                    <option value="{{ year }}">{{ year }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+            <button class="btn-age-verify" onclick="verifyAgeByDate()">
+              Verify Age
+            </button>
+          {% endif %}
+
+          <div class="age-gate-error" id="age-gate-error" style="display: none;">
+            {{ section.settings.age_gate_error | default: 'Sorry, you must be 21 or older to access this site.' }}
+          </div>
+        </div>
+
+        <p class="age-gate-disclaimer">
+          {{ section.settings.age_gate_disclaimer | default: 'By entering this site, you agree to our Terms of Service and Privacy Policy.' }}
+        </p>
+
+        {% if section.settings.show_remember_checkbox %}
+          <label class="age-gate-remember">
+            <input type="checkbox" id="remember-age" checked>
+            <span class="checkbox-custom"></span>
+            Remember me for {{ section.settings.cookie_days | default: 30 }} days
+          </label>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  {% comment %} Hero Content {% endcomment %}
+  <div class="hero-wrapper" id="hero-wrapper">
+    {% if section.settings.background_image %}
+      <div class="hero-background">
+        <img
+          src="{{ section.settings.background_image | img_url: '2000x' }}"
+          alt=""
+          class="hero-bg-image"
+          loading="eager"
+        >
+        <div class="hero-overlay" style="background: {{ section.settings.overlay_color | default: 'rgba(0,0,0,0.5)' }};"></div>
+      </div>
+    {% elsif section.settings.background_video %}
+      <div class="hero-background">
+        <video class="hero-bg-video" autoplay muted loop playsinline>
+          <source src="{{ section.settings.background_video }}" type="video/mp4">
+        </video>
+        <div class="hero-overlay" style="background: {{ section.settings.overlay_color | default: 'rgba(0,0,0,0.5)' }};"></div>
+      </div>
+    {% else %}
+      <div class="hero-background hero-gradient" style="background: {{ section.settings.background_gradient | default: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)' }};"></div>
+    {% endif %}
+
+    <div class="hero-content" style="text-align: {{ section.settings.content_alignment | default: 'center' }};">
+      {% if section.settings.pre_heading %}
+        <p class="hero-preheading">{{ section.settings.pre_heading }}</p>
+      {% endif %}
+
+      <h1 class="hero-heading" style="color: {{ section.settings.heading_color | default: '#ffffff' }};">
+        {{ section.settings.heading | default: 'Premium Cannabis Products' }}
+      </h1>
+
+      {% if section.settings.subheading %}
+        <p class="hero-subheading" style="color: {{ section.settings.subheading_color | default: '#ffffff' }};">
+          {{ section.settings.subheading }}
+        </p>
+      {% endif %}
+
+      <div class="hero-buttons">
+        {% if section.settings.button_1_text %}
+          <a
+            href="{{ section.settings.button_1_link | default: routes.all_products_collection_url }}"
+            class="btn-hero btn-primary"
+            style="background: {{ section.settings.button_1_bg | default: '#10b981' }}; color: {{ section.settings.button_1_color | default: '#ffffff' }};"
+          >
+            {{ section.settings.button_1_text }}
+          </a>
+        {% endif %}
+
+        {% if section.settings.button_2_text %}
+          <a
+            href="{{ section.settings.button_2_link | default: '#' }}"
+            class="btn-hero btn-secondary"
+            style="border-color: {{ section.settings.button_2_border | default: '#ffffff' }}; color: {{ section.settings.button_2_color | default: '#ffffff' }};"
+          >
+            {{ section.settings.button_2_text }}
+          </a>
+        {% endif %}
+      </div>
+
+      {% if section.settings.show_scroll_indicator %}
+        <div class="hero-scroll-indicator">
+          <span>Scroll to explore</span>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M12 5v14M19 12l-7 7-7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+      {% endif %}
+    </div>
+
+    {% if section.settings.show_trust_badges %}
+      <div class="hero-trust-badges">
+        <div class="trust-badge">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>Lab Tested</span>
+        </div>
+        <div class="trust-badge">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>Secure Checkout</span>
+        </div>
+        <div class="trust-badge">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>Discreet Shipping</span>
+        </div>
+        <div class="trust-badge">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>Fast Delivery</span>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+<style>
+  .hero-section {
+    position: relative;
+    min-height: {{ section.settings.hero_height | default: '100vh' }};
+  }
+
+  /* Age Gate Styles */
+  .age-gate-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.95);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+
+  .age-gate-overlay.hidden {
+    display: none;
+  }
+
+  .age-gate-modal {
+    max-width: 500px;
+    width: 90%;
+    margin: 2rem;
+  }
+
+  .age-gate-content {
+    background: #1a1a1a;
+    border-radius: 16px;
+    padding: 3rem 2rem;
+    text-align: center;
+    color: white;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .age-gate-logo {
+    max-width: 150px;
+    height: auto;
+    margin-bottom: 1.5rem;
+  }
+
+  .age-gate-icon {
+    margin-bottom: 1.5rem;
+    color: {{ section.settings.accent_color | default: '#10b981' }};
+  }
+
+  .age-gate-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin: 0 0 0.75rem;
+    line-height: 1.2;
+  }
+
+  .age-gate-subtitle {
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin: 0 0 2rem;
+    line-height: 1.5;
+  }
+
+  .age-gate-form {
+    margin-bottom: 1.5rem;
+  }
+
+  .age-gate-question {
+    font-size: 1rem;
+    margin: 0 0 1.25rem;
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  .age-gate-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .btn-age-yes,
+  .btn-age-no {
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    min-width: 160px;
+  }
+
+  .btn-age-yes {
+    background: {{ section.settings.accent_color | default: '#10b981' }};
+    border: none;
+    color: white;
+  }
+
+  .btn-age-yes:hover {
+    background: {{ section.settings.accent_color | default: '#10b981' | color_darken: 10 }};
+    transform: translateY(-2px);
+  }
+
+  .btn-age-no {
+    background: transparent;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  .btn-age-no:hover {
+    border-color: rgba(255, 255, 255, 0.5);
+    color: white;
+  }
+
+  /* Date Input Styles */
+  .age-gate-date-inputs {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .date-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .date-input-group label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  .date-input {
+    padding: 0.75rem 1rem;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    color: white;
+    font-size: 1rem;
+    min-width: 90px;
+    cursor: pointer;
+  }
+
+  .date-input:focus {
+    outline: none;
+    border-color: {{ section.settings.accent_color | default: '#10b981' }};
+  }
+
+  .btn-age-verify {
+    width: 100%;
+    max-width: 300px;
+    padding: 1rem 2rem;
+    background: {{ section.settings.accent_color | default: '#10b981' }};
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-age-verify:hover {
+    transform: translateY(-2px);
+  }
+
+  .age-gate-error {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: rgba(239, 68, 68, 0.2);
+    border: 1px solid rgba(239, 68, 68, 0.5);
+    border-radius: 8px;
+    color: #fca5a5;
+  }
+
+  .age-gate-disclaimer {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.5);
+    margin: 0 0 1rem;
+    line-height: 1.5;
+  }
+
+  .age-gate-remember {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.7);
+    cursor: pointer;
+  }
+
+  .age-gate-remember input {
+    display: none;
+  }
+
+  .checkbox-custom {
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+
+  .age-gate-remember input:checked + .checkbox-custom {
+    background: {{ section.settings.accent_color | default: '#10b981' }};
+    border-color: {{ section.settings.accent_color | default: '#10b981' }};
+  }
+
+  .age-gate-remember input:checked + .checkbox-custom::after {
+    content: '';
+    width: 10px;
+    height: 6px;
+    border: 2px solid white;
+    border-top: none;
+    border-right: none;
+    transform: rotate(-45deg);
+    margin-bottom: 2px;
+  }
+
+  /* Hero Styles */
+  .hero-wrapper {
+    position: relative;
+    min-height: inherit;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .hero-background {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+
+  .hero-bg-image,
+  .hero-bg-video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .hero-overlay {
+    position: absolute;
+    inset: 0;
+  }
+
+  .hero-gradient {
+    width: 100%;
+    height: 100%;
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 1;
+    max-width: 900px;
+    padding: 4rem 2rem;
+  }
+
+  .hero-preheading {
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: {{ section.settings.accent_color | default: '#10b981' }};
+    margin: 0 0 1rem;
+    font-weight: 600;
+  }
+
+  .hero-heading {
+    font-size: clamp(2.5rem, 8vw, 4.5rem);
+    font-weight: 800;
+    margin: 0 0 1.5rem;
+    line-height: 1.1;
+    text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  }
+
+  .hero-subheading {
+    font-size: clamp(1rem, 2.5vw, 1.375rem);
+    margin: 0 0 2.5rem;
+    line-height: 1.6;
+    opacity: 0.9;
+  }
+
+  .hero-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: {{ section.settings.content_alignment | default: 'center' }};
+    flex-wrap: wrap;
+  }
+
+  .btn-hero {
+    padding: 1rem 2.5rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  }
+
+  .btn-secondary {
+    background: transparent;
+    border: 2px solid;
+  }
+
+  .btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+  }
+
+  .hero-scroll-indicator {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    animation: bounce 2s infinite;
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(10px); }
+  }
+
+  .hero-trust-badges {
+    position: absolute;
+    bottom: 3rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    z-index: 1;
+  }
+
+  .trust-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+
+  .trust-badge svg {
+    color: {{ section.settings.accent_color | default: '#10b981' }};
+  }
+
+  /* Mobile Responsive */
+  @media (max-width: 768px) {
+    .hero-section {
+      min-height: 100vh;
+    }
+
+    .age-gate-content {
+      padding: 2rem 1.5rem;
+    }
+
+    .age-gate-title {
+      font-size: 1.5rem;
+    }
+
+    .age-gate-buttons {
+      flex-direction: column;
+    }
+
+    .btn-age-yes,
+    .btn-age-no {
+      width: 100%;
+    }
+
+    .age-gate-date-inputs {
+      flex-wrap: wrap;
+    }
+
+    .date-input-group {
+      flex: 1;
+      min-width: 80px;
+    }
+
+    .hero-content {
+      padding: 3rem 1.5rem;
+    }
+
+    .hero-buttons {
+      flex-direction: column;
+      width: 100%;
+    }
+
+    .btn-hero {
+      width: 100%;
+      justify-content: center;
+    }
+
+    .hero-trust-badges {
+      position: relative;
+      bottom: auto;
+      left: auto;
+      transform: none;
+      margin-top: 2rem;
+      padding: 0 1rem;
+      gap: 1rem;
+    }
+
+    .trust-badge {
+      font-size: 0.75rem;
+    }
+
+    .hero-scroll-indicator {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  (function() {
+    const COOKIE_NAME = 'age_verified';
+    const COOKIE_DAYS = {{ section.settings.cookie_days | default: 30 }};
+    const MIN_AGE = {{ section.settings.minimum_age | default: 21 }};
+    const overlay = document.getElementById('age-gate-overlay');
+
+    // Check if already verified
+    function isAgeVerified() {
+      return document.cookie.split(';').some(c => c.trim().startsWith(COOKIE_NAME + '='));
+    }
+
+    // Set verification cookie
+    function setAgeVerifiedCookie(days) {
+      const date = new Date();
+      date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+      document.cookie = `${COOKIE_NAME}=true; expires=${date.toUTCString()}; path=/; SameSite=Lax`;
+    }
+
+    // Hide overlay
+    function hideAgeGate() {
+      overlay.classList.add('hidden');
+      document.body.style.overflow = '';
+    }
+
+    // Show overlay
+    function showAgeGate() {
+      overlay.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    }
+
+    // Simple yes/no verification
+    window.verifyAge = function(isOfAge) {
+      if (isOfAge) {
+        const remember = document.getElementById('remember-age');
+        if (remember && remember.checked) {
+          setAgeVerifiedCookie(COOKIE_DAYS);
+        } else {
+          // Session only
+          sessionStorage.setItem(COOKIE_NAME, 'true');
+        }
+        hideAgeGate();
+      } else {
+        document.getElementById('age-gate-error').style.display = 'block';
+        // Optionally redirect to a different page
+        // window.location.href = 'https://google.com';
+      }
+    };
+
+    // Date-based verification
+    window.verifyAgeByDate = function() {
+      const month = document.getElementById('age-month').value;
+      const day = document.getElementById('age-day').value;
+      const year = document.getElementById('age-year').value;
+
+      if (!month || !day || !year) {
+        document.getElementById('age-gate-error').style.display = 'block';
+        document.getElementById('age-gate-error').textContent = 'Please enter a complete date of birth.';
+        return;
+      }
+
+      const birthDate = new Date(year, month - 1, day);
+      const today = new Date();
+      let age = today.getFullYear() - birthDate.getFullYear();
+      const monthDiff = today.getMonth() - birthDate.getMonth();
+
+      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+      }
+
+      if (age >= MIN_AGE) {
+        const remember = document.getElementById('remember-age');
+        if (remember && remember.checked) {
+          setAgeVerifiedCookie(COOKIE_DAYS);
+        } else {
+          sessionStorage.setItem(COOKIE_NAME, 'true');
+        }
+        hideAgeGate();
+      } else {
+        document.getElementById('age-gate-error').style.display = 'block';
+        document.getElementById('age-gate-error').textContent = `Sorry, you must be ${MIN_AGE} or older to access this site.`;
+      }
+    };
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+      if (isAgeVerified() || sessionStorage.getItem(COOKIE_NAME)) {
+        hideAgeGate();
+      } else {
+        showAgeGate();
+      }
+    });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Hero with Age Gate",
+  "tag": "section",
+  "class": "hero-age-gate-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Age Verification Settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_age_gate",
+      "label": "Enable Age Gate",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "age_verification_type",
+      "label": "Verification Type",
+      "options": [
+        { "value": "simple", "label": "Simple Yes/No" },
+        { "value": "date", "label": "Date of Birth" }
+      ],
+      "default": "simple"
+    },
+    {
+      "type": "range",
+      "id": "minimum_age",
+      "label": "Minimum Age",
+      "min": 18,
+      "max": 25,
+      "step": 1,
+      "default": 21
+    },
+    {
+      "type": "range",
+      "id": "cookie_days",
+      "label": "Remember for (days)",
+      "min": 1,
+      "max": 365,
+      "step": 1,
+      "default": 30
+    },
+    {
+      "type": "checkbox",
+      "id": "show_remember_checkbox",
+      "label": "Show 'Remember me' checkbox",
+      "default": true
+    },
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo for Age Gate"
+    },
+    {
+      "type": "text",
+      "id": "age_gate_title",
+      "label": "Age Gate Title",
+      "default": "Age Verification Required"
+    },
+    {
+      "type": "textarea",
+      "id": "age_gate_subtitle",
+      "label": "Age Gate Subtitle",
+      "default": "You must be 21 years or older to enter this website."
+    },
+    {
+      "type": "text",
+      "id": "age_gate_question",
+      "label": "Age Gate Question",
+      "default": "Are you 21 years of age or older?"
+    },
+    {
+      "type": "text",
+      "id": "yes_button_text",
+      "label": "Yes Button Text",
+      "default": "Yes, I am 21+"
+    },
+    {
+      "type": "text",
+      "id": "no_button_text",
+      "label": "No Button Text",
+      "default": "No, I am under 21"
+    },
+    {
+      "type": "textarea",
+      "id": "age_gate_disclaimer",
+      "label": "Disclaimer Text",
+      "default": "By entering this site, you agree to our Terms of Service and Privacy Policy."
+    },
+    {
+      "type": "textarea",
+      "id": "age_gate_error",
+      "label": "Error Message",
+      "default": "Sorry, you must be 21 or older to access this site."
+    },
+    {
+      "type": "header",
+      "content": "Hero Settings"
+    },
+    {
+      "type": "select",
+      "id": "hero_height",
+      "label": "Hero Height",
+      "options": [
+        { "value": "100vh", "label": "Full Screen" },
+        { "value": "80vh", "label": "80% Screen" },
+        { "value": "600px", "label": "600px" },
+        { "value": "500px", "label": "500px" }
+      ],
+      "default": "100vh"
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "Background Image"
+    },
+    {
+      "type": "url",
+      "id": "background_video",
+      "label": "Background Video URL (MP4)"
+    },
+    {
+      "type": "text",
+      "id": "background_gradient",
+      "label": "Background Gradient (if no image/video)",
+      "default": "linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)"
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "Overlay Color",
+      "default": "rgba(0,0,0,0.5)"
+    },
+    {
+      "type": "select",
+      "id": "content_alignment",
+      "label": "Content Alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "text",
+      "id": "pre_heading",
+      "label": "Pre-heading Text",
+      "default": "Welcome to"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Premium Cannabis Products"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Discover our curated selection of lab-tested, premium quality cannabis products. From flowers to edibles, we have everything you need."
+    },
+    {
+      "type": "color",
+      "id": "subheading_color",
+      "label": "Subheading Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent Color",
+      "default": "#10b981"
+    },
+    {
+      "type": "header",
+      "content": "Primary Button"
+    },
+    {
+      "type": "text",
+      "id": "button_1_text",
+      "label": "Button Text",
+      "default": "Shop Now"
+    },
+    {
+      "type": "url",
+      "id": "button_1_link",
+      "label": "Button Link"
+    },
+    {
+      "type": "color",
+      "id": "button_1_bg",
+      "label": "Button Background",
+      "default": "#10b981"
+    },
+    {
+      "type": "color",
+      "id": "button_1_color",
+      "label": "Button Text Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Secondary Button"
+    },
+    {
+      "type": "text",
+      "id": "button_2_text",
+      "label": "Button Text",
+      "default": "Learn More"
+    },
+    {
+      "type": "url",
+      "id": "button_2_link",
+      "label": "Button Link"
+    },
+    {
+      "type": "color",
+      "id": "button_2_border",
+      "label": "Button Border Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "button_2_color",
+      "label": "Button Text Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Additional Options"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_scroll_indicator",
+      "label": "Show Scroll Indicator",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_trust_badges",
+      "label": "Show Trust Badges",
+      "default": true
+    }
+  ],
+  "presets": [
+    {
+      "name": "Hero with Age Gate",
+      "category": "Cannabis"
+    }
+  ]
+}
+{% endschema %}

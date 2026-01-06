@@ -1,0 +1,774 @@
+{% comment %}
+  Lab Results Showcase Section
+  Display lab testing information and trust signals
+{% endcomment %}
+
+<section class="lab-results-section" id="lab-results-{{ section.id }}">
+  <div class="lab-results-container">
+    <div class="lab-results-content">
+      <div class="lab-results-text">
+        {% if section.settings.pre_heading %}
+          <span class="section-preheading">{{ section.settings.pre_heading }}</span>
+        {% endif %}
+        {% if section.settings.heading %}
+          <h2 class="section-heading">{{ section.settings.heading }}</h2>
+        {% endif %}
+        {% if section.settings.description %}
+          <p class="section-description">{{ section.settings.description }}</p>
+        {% endif %}
+
+        <div class="lab-features">
+          {% for block in section.blocks %}
+            {% if block.type == 'feature' %}
+              <div class="lab-feature" {{ block.shopify_attributes }}>
+                <div class="lab-feature-icon" style="background: {{ block.settings.icon_bg | default: '#ecfdf5' }};">
+                  {% case block.settings.icon %}
+                    {% when 'check' %}
+                      <svg viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke="{{ block.settings.icon_color | default: '#10b981' }}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    {% when 'flask' %}
+                      <svg viewBox="0 0 24 24" fill="none"><path d="M9 3h6M10 9V3M14 9V3M5 21h14a2 2 0 001.64-3.14L15 9H9l-5.64 8.86A2 2 0 005 21z" stroke="{{ block.settings.icon_color | default: '#10b981' }}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    {% when 'shield' %}
+                      <svg viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" stroke="{{ block.settings.icon_color | default: '#10b981' }}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    {% when 'document' %}
+                      <svg viewBox="0 0 24 24" fill="none"><path d="M9 12h6M9 16h6M17 21H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke="{{ block.settings.icon_color | default: '#10b981' }}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    {% else %}
+                      <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="{{ block.settings.icon_color | default: '#10b981' }}" stroke-width="2"/></svg>
+                  {% endcase %}
+                </div>
+                <div class="lab-feature-content">
+                  <h4>{{ block.settings.title }}</h4>
+                  <p>{{ block.settings.description }}</p>
+                </div>
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+
+        {% if section.settings.cta_text %}
+          <a href="{{ section.settings.cta_link | default: '#' }}" class="btn-lab-cta">
+            {{ section.settings.cta_text }}
+            <svg width="20" height="20" viewBox="0 0 20 20"><path d="M7 5l5 5-5 5" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+          </a>
+        {% endif %}
+      </div>
+
+      <div class="lab-results-visual">
+        {% if section.settings.image %}
+          <img
+            src="{{ section.settings.image | img_url: '800x' }}"
+            alt="{{ section.settings.heading }}"
+            class="lab-results-image"
+            loading="lazy"
+          >
+        {% else %}
+          <div class="lab-results-graphic">
+            <div class="coa-preview">
+              <div class="coa-header">
+                <div class="coa-logo">
+                  <svg viewBox="0 0 40 40" fill="none">
+                    <circle cx="20" cy="20" r="18" stroke="currentColor" stroke-width="2"/>
+                    <path d="M20 8v12l8 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  </svg>
+                </div>
+                <div class="coa-title">
+                  <span>Certificate of Analysis</span>
+                  <small>Third-Party Lab Tested</small>
+                </div>
+              </div>
+
+              <div class="coa-results">
+                <div class="coa-result">
+                  <span class="result-label">Total THC</span>
+                  <div class="result-bar">
+                    <div class="result-fill thc" style="width: 75%;"></div>
+                  </div>
+                  <span class="result-value">24.5%</span>
+                </div>
+                <div class="coa-result">
+                  <span class="result-label">Total CBD</span>
+                  <div class="result-bar">
+                    <div class="result-fill cbd" style="width: 15%;"></div>
+                  </div>
+                  <span class="result-value">0.8%</span>
+                </div>
+                <div class="coa-result">
+                  <span class="result-label">Terpenes</span>
+                  <div class="result-bar">
+                    <div class="result-fill terpenes" style="width: 40%;"></div>
+                  </div>
+                  <span class="result-value">3.2%</span>
+                </div>
+              </div>
+
+              <div class="coa-tests">
+                <div class="coa-test passed">
+                  <svg viewBox="0 0 20 20"><path d="M6 10l3 3 5-5" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+                  Pesticide Free
+                </div>
+                <div class="coa-test passed">
+                  <svg viewBox="0 0 20 20"><path d="M6 10l3 3 5-5" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+                  Heavy Metal Free
+                </div>
+                <div class="coa-test passed">
+                  <svg viewBox="0 0 20 20"><path d="M6 10l3 3 5-5" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+                  Mold & Mildew Free
+                </div>
+              </div>
+
+              <div class="coa-footer">
+                <span>Verified by Independent Lab</span>
+              </div>
+            </div>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    {% comment %} Trust Stats {% endcomment %}
+    {% if section.settings.show_stats %}
+      <div class="lab-stats">
+        {% for block in section.blocks %}
+          {% if block.type == 'stat' %}
+            <div class="lab-stat" {{ block.shopify_attributes }}>
+              <span class="stat-number">{{ block.settings.number }}</span>
+              <span class="stat-label">{{ block.settings.label }}</span>
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {% comment %} Lab Partner Logos {% endcomment %}
+    {% if section.settings.show_partners %}
+      <div class="lab-partners">
+        <p class="partners-label">{{ section.settings.partners_label | default: 'Our Testing Partners' }}</p>
+        <div class="partners-logos">
+          {% for block in section.blocks %}
+            {% if block.type == 'partner' %}
+              <div class="partner-logo" {{ block.shopify_attributes }}>
+                {% if block.settings.logo %}
+                  <img src="{{ block.settings.logo | img_url: '200x' }}" alt="{{ block.settings.name }}">
+                {% else %}
+                  <span class="partner-name">{{ block.settings.name }}</span>
+                {% endif %}
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+<style>
+  .lab-results-section {
+    padding: {{ section.settings.padding_top | default: 80 }}px 2rem {{ section.settings.padding_bottom | default: 80 }}px;
+    background: {{ section.settings.background_color | default: '#1a1a2e' }};
+    color: white;
+  }
+
+  .lab-results-container {
+    max-width: var(--page-width, 1400px);
+    margin: 0 auto;
+  }
+
+  .lab-results-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+  }
+
+  /* Text Content */
+  .lab-results-text {
+    padding-right: 2rem;
+  }
+
+  .section-preheading {
+    display: inline-block;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: {{ section.settings.accent_color | default: '#10b981' }};
+    font-weight: 600;
+    margin-bottom: 1rem;
+    padding: 0.5rem 1rem;
+    background: rgba(16, 185, 129, 0.1);
+    border-radius: 100px;
+  }
+
+  .section-heading {
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 800;
+    margin: 0 0 1.5rem;
+    line-height: 1.1;
+  }
+
+  .section-description {
+    font-size: 1.125rem;
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.7;
+    margin: 0 0 2rem;
+  }
+
+  /* Lab Features */
+  .lab-features {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    margin-bottom: 2rem;
+  }
+
+  .lab-feature {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+
+  .lab-feature-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .lab-feature-icon svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .lab-feature-content h4 {
+    margin: 0 0 0.25rem;
+    font-size: 1rem;
+    font-weight: 600;
+  }
+
+  .lab-feature-content p {
+    margin: 0;
+    font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.6);
+    line-height: 1.5;
+  }
+
+  .btn-lab-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem 2rem;
+    background: {{ section.settings.accent_color | default: '#10b981' }};
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+
+  .btn-lab-cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
+  }
+
+  /* Visual Side */
+  .lab-results-visual {
+    display: flex;
+    justify-content: center;
+  }
+
+  .lab-results-image {
+    max-width: 100%;
+    border-radius: 16px;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+  }
+
+  .lab-results-graphic {
+    width: 100%;
+    max-width: 400px;
+  }
+
+  /* COA Preview */
+  .coa-preview {
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    color: #111827;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+  }
+
+  .coa-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #f3f4f6;
+  }
+
+  .coa-logo svg {
+    width: 40px;
+    height: 40px;
+    color: {{ section.settings.accent_color | default: '#10b981' }};
+  }
+
+  .coa-title {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .coa-title span {
+    font-weight: 700;
+    font-size: 1rem;
+  }
+
+  .coa-title small {
+    font-size: 0.75rem;
+    color: #6b7280;
+  }
+
+  .coa-results {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .coa-result {
+    display: grid;
+    grid-template-columns: 80px 1fr 50px;
+    gap: 1rem;
+    align-items: center;
+  }
+
+  .result-label {
+    font-size: 0.8125rem;
+    color: #6b7280;
+  }
+
+  .result-bar {
+    height: 8px;
+    background: #f3f4f6;
+    border-radius: 100px;
+    overflow: hidden;
+  }
+
+  .result-fill {
+    height: 100%;
+    border-radius: 100px;
+    transition: width 1s ease;
+  }
+
+  .result-fill.thc { background: linear-gradient(90deg, #fbbf24, #f59e0b); }
+  .result-fill.cbd { background: linear-gradient(90deg, #10b981, #059669); }
+  .result-fill.terpenes { background: linear-gradient(90deg, #8b5cf6, #6366f1); }
+
+  .result-value {
+    font-weight: 700;
+    font-size: 0.875rem;
+    text-align: right;
+  }
+
+  .coa-tests {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+
+  .coa-test {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    font-size: 0.6875rem;
+    color: #6b7280;
+    padding: 0.5rem;
+    background: #f9fafb;
+    border-radius: 6px;
+  }
+
+  .coa-test.passed {
+    color: #059669;
+    background: #ecfdf5;
+  }
+
+  .coa-test svg {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+  }
+
+  .coa-footer {
+    text-align: center;
+    padding-top: 1rem;
+    border-top: 1px solid #f3f4f6;
+    font-size: 0.75rem;
+    color: #9ca3af;
+  }
+
+  /* Lab Stats */
+  .lab-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2rem;
+    margin-top: 4rem;
+    padding-top: 3rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .lab-stat {
+    text-align: center;
+  }
+
+  .stat-number {
+    display: block;
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: {{ section.settings.accent_color | default: '#10b981' }};
+    line-height: 1;
+    margin-bottom: 0.5rem;
+  }
+
+  .stat-label {
+    font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  /* Lab Partners */
+  .lab-partners {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    text-align: center;
+  }
+
+  .partners-label {
+    font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.5);
+    margin-bottom: 1.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .partners-logos {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 3rem;
+    flex-wrap: wrap;
+  }
+
+  .partner-logo img {
+    height: 40px;
+    width: auto;
+    filter: brightness(0) invert(1);
+    opacity: 0.6;
+    transition: opacity 0.2s;
+  }
+
+  .partner-logo:hover img {
+    opacity: 1;
+  }
+
+  .partner-name {
+    font-size: 1.25rem;
+    font-weight: 600;
+    opacity: 0.6;
+  }
+
+  /* Mobile Responsive */
+  @media (max-width: 1024px) {
+    .lab-results-content {
+      grid-template-columns: 1fr;
+      gap: 3rem;
+    }
+
+    .lab-results-text {
+      padding-right: 0;
+      text-align: center;
+    }
+
+    .lab-features {
+      max-width: 500px;
+      margin: 0 auto 2rem;
+    }
+
+    .lab-feature {
+      text-align: left;
+    }
+
+    .lab-stats {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .lab-results-section {
+      padding: 3rem 1rem;
+    }
+
+    .coa-tests {
+      grid-template-columns: 1fr;
+    }
+
+    .lab-stats {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
+    }
+
+    .stat-number {
+      font-size: 2rem;
+    }
+
+    .partners-logos {
+      gap: 2rem;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Lab Results Showcase",
+  "tag": "section",
+  "class": "lab-results",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "pre_heading",
+      "label": "Pre-heading",
+      "default": "Quality Guaranteed"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Third-Party Lab Tested"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description",
+      "default": "Every product we sell is rigorously tested by independent laboratories to ensure purity, potency, and safety. View our Certificates of Analysis (COA) on every product page."
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image (optional)"
+    },
+    {
+      "type": "text",
+      "id": "cta_text",
+      "label": "CTA Text",
+      "default": "View Our Lab Results"
+    },
+    {
+      "type": "url",
+      "id": "cta_link",
+      "label": "CTA Link"
+    },
+    {
+      "type": "header",
+      "content": "Display Options"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_stats",
+      "label": "Show Statistics",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_partners",
+      "label": "Show Lab Partners",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "partners_label",
+      "label": "Partners Label",
+      "default": "Our Testing Partners"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Color",
+      "default": "#1a1a2e"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent Color",
+      "default": "#10b981"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding Top (px)",
+      "min": 0,
+      "max": 150,
+      "step": 10,
+      "default": 80
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding Bottom (px)",
+      "min": 0,
+      "max": 150,
+      "step": 10,
+      "default": 80
+    }
+  ],
+  "blocks": [
+    {
+      "type": "feature",
+      "name": "Feature",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            { "value": "check", "label": "Checkmark" },
+            { "value": "flask", "label": "Flask" },
+            { "value": "shield", "label": "Shield" },
+            { "value": "document", "label": "Document" }
+          ],
+          "default": "check"
+        },
+        {
+          "type": "color",
+          "id": "icon_bg",
+          "label": "Icon Background",
+          "default": "#ecfdf5"
+        },
+        {
+          "type": "color",
+          "id": "icon_color",
+          "label": "Icon Color",
+          "default": "#10b981"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Potency Verified"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "Description",
+          "default": "Accurate THC, CBD, and terpene levels confirmed"
+        }
+      ]
+    },
+    {
+      "type": "stat",
+      "name": "Statistic",
+      "settings": [
+        {
+          "type": "text",
+          "id": "number",
+          "label": "Number",
+          "default": "100%"
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Label",
+          "default": "Products Tested"
+        }
+      ]
+    },
+    {
+      "type": "partner",
+      "name": "Lab Partner",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "logo",
+          "label": "Logo"
+        },
+        {
+          "type": "text",
+          "id": "name",
+          "label": "Name",
+          "default": "Lab Partner"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Lab Results Showcase",
+      "category": "Cannabis",
+      "blocks": [
+        {
+          "type": "feature",
+          "settings": {
+            "icon": "check",
+            "title": "Potency Verified",
+            "description": "Accurate THC, CBD, and terpene levels confirmed by independent labs"
+          }
+        },
+        {
+          "type": "feature",
+          "settings": {
+            "icon": "shield",
+            "title": "Contaminant Free",
+            "description": "Tested for pesticides, heavy metals, mold, and residual solvents"
+          }
+        },
+        {
+          "type": "feature",
+          "settings": {
+            "icon": "document",
+            "title": "COA Available",
+            "description": "Certificate of Analysis available for every product batch"
+          }
+        },
+        {
+          "type": "stat",
+          "settings": {
+            "number": "100%",
+            "label": "Products Lab Tested"
+          }
+        },
+        {
+          "type": "stat",
+          "settings": {
+            "number": "50+",
+            "label": "Tests Per Batch"
+          }
+        },
+        {
+          "type": "stat",
+          "settings": {
+            "number": "0",
+            "label": "Contaminants Found"
+          }
+        },
+        {
+          "type": "stat",
+          "settings": {
+            "number": "3",
+            "label": "Partner Labs"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

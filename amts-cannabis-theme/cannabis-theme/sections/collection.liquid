@@ -1,0 +1,1413 @@
+{% comment %}
+  Cannabis Collection Template
+  Enhanced collection page with strain type filters, grades, and cannabis-specific product cards
+{% endcomment %}
+
+{% assign current_strain = request.query_string | split: 'strain=' | last | split: '&' | first %}
+{% assign current_grade = request.query_string | split: 'grade=' | last | split: '&' | first %}
+{% assign current_sort = request.query_string | split: 'sort_by=' | last | split: '&' | first %}
+
+<div class="collection-page">
+  {% comment %} Collection Header {% endcomment %}
+  <div class="collection-header">
+    {% if collection.image %}
+      <div class="collection-hero" style="background-image: url('{{ collection.image | img_url: '1600x' }}');">
+        <div class="collection-hero-overlay"></div>
+        <div class="collection-hero-content">
+          <h1 class="collection-title">{{ collection.title }}</h1>
+          {% if collection.description != blank %}
+            <div class="collection-description">{{ collection.description }}</div>
+          {% endif %}
+          <p class="collection-count">{{ collection.products_count }} {{ 'collections.general.products' | t | default: 'products' }}</p>
+        </div>
+      </div>
+    {% else %}
+      <div class="collection-header-simple">
+        <h1 class="collection-title">{{ collection.title }}</h1>
+        {% if collection.description != blank %}
+          <div class="collection-description">{{ collection.description }}</div>
+        {% endif %}
+        <p class="collection-count">{{ collection.products_count }} {{ 'collections.general.products' | t | default: 'products' }}</p>
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="collection-main">
+    {% comment %} Filters Sidebar {% endcomment %}
+    <aside class="collection-filters">
+      <div class="filters-header">
+        <h3>Filters</h3>
+        <button class="btn-clear-filters" onclick="clearAllFilters()">Clear All</button>
+      </div>
+
+      {% comment %} Strain Type Filter {% endcomment %}
+      <div class="filter-group">
+        <h4 class="filter-title">
+          Strain Type
+          <svg class="filter-toggle" width="12" height="12" viewBox="0 0 12 12">
+            <path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="2" fill="none"/>
+          </svg>
+        </h4>
+        <div class="filter-options">
+          {% assign strain_types = 'Indica,Sativa,Hybrid,CBD,THCA,Delta-9 Hemp' | split: ',' %}
+          {% for strain in strain_types %}
+            <label class="filter-option">
+              <input
+                type="checkbox"
+                name="strain"
+                value="{{ strain | handle }}"
+                {% if current_strain == strain or current_strain contains strain %}checked{% endif %}
+                onchange="applyFilters()"
+              >
+              <span class="filter-checkbox"></span>
+              <span class="filter-label">{{ strain }}</span>
+              <span class="filter-badge badge-{{ strain | handle }}"></span>
+            </label>
+          {% endfor %}
+        </div>
+      </div>
+
+      {% comment %} Product Grade Filter {% endcomment %}
+      <div class="filter-group">
+        <h4 class="filter-title">
+          Product Grade
+          <svg class="filter-toggle" width="12" height="12" viewBox="0 0 12 12">
+            <path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="2" fill="none"/>
+          </svg>
+        </h4>
+        <div class="filter-options">
+          {% assign grades = 'Budget,Mid-tier,Premium,Exotic' | split: ',' %}
+          {% for grade in grades %}
+            <label class="filter-option">
+              <input
+                type="checkbox"
+                name="grade"
+                value="{{ grade | handle }}"
+                {% if current_grade == grade or current_grade contains grade %}checked{% endif %}
+                onchange="applyFilters()"
+              >
+              <span class="filter-checkbox"></span>
+              <span class="filter-label">{{ grade }}</span>
+            </label>
+          {% endfor %}
+        </div>
+      </div>
+
+      {% comment %} Effects Filter {% endcomment %}
+      <div class="filter-group">
+        <h4 class="filter-title">
+          Effects
+          <svg class="filter-toggle" width="12" height="12" viewBox="0 0 12 12">
+            <path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="2" fill="none"/>
+          </svg>
+        </h4>
+        <div class="filter-options">
+          {% assign effects = 'Relaxing,Euphoric,Creative,Energizing,Focused,Sleepy,Uplifting,Calming' | split: ',' %}
+          {% for effect in effects %}
+            <label class="filter-option">
+              <input
+                type="checkbox"
+                name="effect"
+                value="{{ effect | handle }}"
+                onchange="applyFilters()"
+              >
+              <span class="filter-checkbox"></span>
+              <span class="filter-label">{{ effect }}</span>
+            </label>
+          {% endfor %}
+        </div>
+      </div>
+
+      {% comment %} Price Range Filter {% endcomment %}
+      <div class="filter-group">
+        <h4 class="filter-title">
+          Price Range
+          <svg class="filter-toggle" width="12" height="12" viewBox="0 0 12 12">
+            <path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="2" fill="none"/>
+          </svg>
+        </h4>
+        <div class="filter-options price-range">
+          <div class="price-inputs">
+            <input type="number" id="price-min" placeholder="Min" class="price-input">
+            <span>-</span>
+            <input type="number" id="price-max" placeholder="Max" class="price-input">
+          </div>
+          <button class="btn-apply-price" onclick="applyPriceFilter()">Apply</button>
+        </div>
+      </div>
+
+      {% comment %} THC Content Filter {% endcomment %}
+      <div class="filter-group">
+        <h4 class="filter-title">
+          THC Content
+          <svg class="filter-toggle" width="12" height="12" viewBox="0 0 12 12">
+            <path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="2" fill="none"/>
+          </svg>
+        </h4>
+        <div class="filter-options">
+          <label class="filter-option">
+            <input type="checkbox" name="thc" value="low" onchange="applyFilters()">
+            <span class="filter-checkbox"></span>
+            <span class="filter-label">Low (0-15%)</span>
+          </label>
+          <label class="filter-option">
+            <input type="checkbox" name="thc" value="medium" onchange="applyFilters()">
+            <span class="filter-checkbox"></span>
+            <span class="filter-label">Medium (15-25%)</span>
+          </label>
+          <label class="filter-option">
+            <input type="checkbox" name="thc" value="high" onchange="applyFilters()">
+            <span class="filter-checkbox"></span>
+            <span class="filter-label">High (25%+)</span>
+          </label>
+        </div>
+      </div>
+    </aside>
+
+    {% comment %} Products Grid {% endcomment %}
+    <div class="collection-content">
+      {% comment %} Toolbar {% endcomment %}
+      <div class="collection-toolbar">
+        <div class="toolbar-left">
+          <button class="btn-mobile-filters" onclick="toggleMobileFilters()">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <path d="M3 6h14M6 10h8M9 14h2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            Filters
+          </button>
+          <span class="product-count">{{ collection.products_count }} products</span>
+        </div>
+        <div class="toolbar-right">
+          <div class="sort-wrapper">
+            <label for="sort-select">Sort by:</label>
+            <select id="sort-select" class="sort-select" onchange="sortProducts(this.value)">
+              <option value="best-selling" {% if current_sort == 'best-selling' %}selected{% endif %}>Best Selling</option>
+              <option value="title-ascending" {% if current_sort == 'title-ascending' %}selected{% endif %}>A-Z</option>
+              <option value="title-descending" {% if current_sort == 'title-descending' %}selected{% endif %}>Z-A</option>
+              <option value="price-ascending" {% if current_sort == 'price-ascending' %}selected{% endif %}>Price: Low to High</option>
+              <option value="price-descending" {% if current_sort == 'price-descending' %}selected{% endif %}>Price: High to Low</option>
+              <option value="created-descending" {% if current_sort == 'created-descending' %}selected{% endif %}>Newest</option>
+            </select>
+          </div>
+          <div class="view-toggle">
+            <button class="view-btn active" data-view="grid" onclick="setView('grid')">
+              <svg width="20" height="20" viewBox="0 0 20 20"><rect x="2" y="2" width="7" height="7" rx="1"/><rect x="11" y="2" width="7" height="7" rx="1"/><rect x="2" y="11" width="7" height="7" rx="1"/><rect x="11" y="11" width="7" height="7" rx="1"/></svg>
+            </button>
+            <button class="view-btn" data-view="list" onclick="setView('list')">
+              <svg width="20" height="20" viewBox="0 0 20 20"><rect x="2" y="3" width="16" height="3" rx="1"/><rect x="2" y="9" width="16" height="3" rx="1"/><rect x="2" y="15" width="16" height="3" rx="1"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {% comment %} Active Filters {% endcomment %}
+      <div class="active-filters" id="active-filters" style="display: none;">
+        <span class="active-filters-label">Active Filters:</span>
+        <div class="active-filter-tags" id="active-filter-tags"></div>
+      </div>
+
+      {% comment %} Products Grid {% endcomment %}
+      <div class="products-grid" id="products-grid">
+        {% paginate collection.products by section.settings.products_per_page %}
+          {% for product in collection.products %}
+            {% assign strain_type = product.metafields.cannabis.strain_type %}
+            {% assign thc = product.metafields.cannabis.thc_percentage %}
+            {% assign cbd = product.metafields.cannabis.cbd_percentage %}
+            {% assign grade = product.metafields.cannabis.product_grade %}
+            {% assign effects = product.metafields.cannabis.effects.value %}
+
+            <article class="product-card"
+              data-strain="{{ strain_type | handle }}"
+              data-grade="{{ grade | handle }}"
+              data-thc="{{ thc }}"
+              data-price="{{ product.price }}"
+            >
+              <a href="{{ product.url }}" class="product-card-link">
+                <div class="product-card-media">
+                  {% if product.featured_image %}
+                    <img
+                      src="{{ product.featured_image | img_url: '500x500', crop: 'center' }}"
+                      alt="{{ product.title }}"
+                      loading="lazy"
+                      class="product-card-image"
+                    >
+                  {% else %}
+                    <div class="product-card-placeholder">
+                      {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}
+                    </div>
+                  {% endif %}
+
+                  {% if product.images.size > 1 %}
+                    <img
+                      src="{{ product.images[1] | img_url: '500x500', crop: 'center' }}"
+                      alt="{{ product.title }}"
+                      loading="lazy"
+                      class="product-card-image-hover"
+                    >
+                  {% endif %}
+
+                  {% comment %} Badges {% endcomment %}
+                  <div class="product-card-badges">
+                    {% if strain_type %}
+                      <span class="badge badge-strain badge-{{ strain_type | handle }}">{{ strain_type }}</span>
+                    {% endif %}
+                    {% if product.compare_at_price > product.price %}
+                      {% assign savings = product.compare_at_price | minus: product.price | times: 100 | divided_by: product.compare_at_price %}
+                      <span class="badge badge-sale">{{ savings }}% Off</span>
+                    {% endif %}
+                    {% unless product.available %}
+                      <span class="badge badge-soldout">Sold Out</span>
+                    {% endunless %}
+                  </div>
+
+                  {% comment %} Quick View Button {% endcomment %}
+                  <button class="btn-quick-view" onclick="event.preventDefault(); quickView('{{ product.handle }}')">
+                    Quick View
+                  </button>
+                </div>
+
+                <div class="product-card-content">
+                  {% if product.vendor %}
+                    <p class="product-card-vendor">{{ product.vendor }}</p>
+                  {% endif %}
+
+                  <h3 class="product-card-title">{{ product.title }}</h3>
+
+                  {% comment %} Cannabinoid Display {% endcomment %}
+                  {% if thc or cbd %}
+                    <div class="product-card-cannabinoids">
+                      {% if thc %}
+                        <span class="cannabinoid thc">THC {{ thc }}%</span>
+                      {% endif %}
+                      {% if cbd %}
+                        <span class="cannabinoid cbd">CBD {{ cbd }}%</span>
+                      {% endif %}
+                    </div>
+                  {% endif %}
+
+                  {% comment %} Effects Preview {% endcomment %}
+                  {% if effects and effects.size > 0 %}
+                    <div class="product-card-effects">
+                      {% for effect in effects limit: 2 %}
+                        <span class="effect-tag-small">{{ effect }}</span>
+                      {% endfor %}
+                      {% if effects.size > 2 %}
+                        <span class="effect-more">+{{ effects.size | minus: 2 }}</span>
+                      {% endif %}
+                    </div>
+                  {% endif %}
+
+                  <div class="product-card-price">
+                    {% if product.compare_at_price > product.price %}
+                      <span class="price-compare">{{ product.compare_at_price | money }}</span>
+                    {% endif %}
+                    <span class="price-current">{{ product.price | money }}</span>
+                    {% if product.price_varies %}
+                      <span class="price-from">from</span>
+                    {% endif %}
+                  </div>
+
+                  {% if grade %}
+                    <div class="product-card-grade">
+                      <span class="grade-label">{{ grade }}</span>
+                    </div>
+                  {% endif %}
+                </div>
+              </a>
+
+              {% comment %} Quick Add Button {% endcomment %}
+              {% if product.available %}
+                {% if product.variants.size == 1 %}
+                  <button
+                    class="btn-quick-add"
+                    onclick="event.preventDefault(); quickAdd('{{ product.variants.first.id }}')"
+                  >
+                    Add to Cart
+                  </button>
+                {% else %}
+                  <a href="{{ product.url }}" class="btn-quick-add btn-select-options">
+                    Select Options
+                  </a>
+                {% endif %}
+              {% endif %}
+            </article>
+          {% endfor %}
+
+          {% comment %} Pagination {% endcomment %}
+          {% if paginate.pages > 1 %}
+            <div class="collection-pagination">
+              <nav class="pagination">
+                {% if paginate.previous %}
+                  <a href="{{ paginate.previous.url }}" class="pagination-prev">
+                    <svg width="20" height="20" viewBox="0 0 20 20"><path d="M12 15l-5-5 5-5" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+                    Previous
+                  </a>
+                {% endif %}
+
+                <div class="pagination-numbers">
+                  {% for part in paginate.parts %}
+                    {% if part.is_link %}
+                      <a href="{{ part.url }}" class="pagination-number">{{ part.title }}</a>
+                    {% else %}
+                      {% if part.title == paginate.current_page %}
+                        <span class="pagination-number current">{{ part.title }}</span>
+                      {% else %}
+                        <span class="pagination-number ellipsis">{{ part.title }}</span>
+                      {% endif %}
+                    {% endif %}
+                  {% endfor %}
+                </div>
+
+                {% if paginate.next %}
+                  <a href="{{ paginate.next.url }}" class="pagination-next">
+                    Next
+                    <svg width="20" height="20" viewBox="0 0 20 20"><path d="M8 5l5 5-5 5" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+                  </a>
+                {% endif %}
+              </nav>
+            </div>
+          {% endif %}
+        {% endpaginate %}
+      </div>
+
+      {% comment %} Empty State {% endcomment %}
+      {% if collection.products.size == 0 %}
+        <div class="collection-empty">
+          <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+            <circle cx="32" cy="32" r="28" stroke="currentColor" stroke-width="2"/>
+            <path d="M24 24l16 16M40 24L24 40" stroke="currentColor" stroke-width="2"/>
+          </svg>
+          <h3>No products found</h3>
+          <p>Try adjusting your filters or browse our other collections.</p>
+          <a href="{{ routes.all_products_collection_url }}" class="btn-browse">Browse All Products</a>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% comment %} Mobile Filters Overlay {% endcomment %}
+<div class="mobile-filters-overlay" id="mobile-filters-overlay" onclick="toggleMobileFilters()"></div>
+
+<style>
+  .collection-page {
+    --collection-gap: 2rem;
+    max-width: var(--page-width, 1400px);
+    margin: 0 auto;
+  }
+
+  /* Collection Header */
+  .collection-hero {
+    position: relative;
+    height: 300px;
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: var(--collection-gap);
+  }
+
+  .collection-hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.6));
+  }
+
+  .collection-hero-content {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    color: white;
+    padding: 2rem;
+  }
+
+  .collection-header-simple {
+    padding: 3rem 2rem;
+    text-align: center;
+    background: #f9fafb;
+    margin-bottom: var(--collection-gap);
+  }
+
+  .collection-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin: 0 0 1rem;
+    line-height: 1.2;
+  }
+
+  .collection-description {
+    max-width: 600px;
+    margin: 0 auto 1rem;
+    line-height: 1.6;
+    opacity: 0.9;
+  }
+
+  .collection-count {
+    margin: 0;
+    font-size: 0.875rem;
+    opacity: 0.7;
+  }
+
+  /* Main Layout */
+  .collection-main {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: var(--collection-gap);
+    padding: 0 2rem 4rem;
+  }
+
+  /* Filters Sidebar */
+  .collection-filters {
+    position: sticky;
+    top: 100px;
+    height: fit-content;
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  }
+
+  .filters-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  .filters-header h3 {
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 700;
+  }
+
+  .btn-clear-filters {
+    background: none;
+    border: none;
+    color: #6b7280;
+    font-size: 0.875rem;
+    cursor: pointer;
+    text-decoration: underline;
+  }
+
+  .btn-clear-filters:hover {
+    color: #111827;
+  }
+
+  .filter-group {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  .filter-group:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+
+  .filter-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0 0 1rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #374151;
+    cursor: pointer;
+  }
+
+  .filter-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .filter-option {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+    font-size: 0.9375rem;
+  }
+
+  .filter-option input {
+    display: none;
+  }
+
+  .filter-checkbox {
+    width: 18px;
+    height: 18px;
+    border: 2px solid #d1d5db;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+
+  .filter-option input:checked + .filter-checkbox {
+    background: var(--color-accent, #10b981);
+    border-color: var(--color-accent, #10b981);
+  }
+
+  .filter-option input:checked + .filter-checkbox::after {
+    content: '';
+    width: 10px;
+    height: 6px;
+    border: 2px solid white;
+    border-top: none;
+    border-right: none;
+    transform: rotate(-45deg);
+    margin-bottom: 2px;
+  }
+
+  .filter-badge {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-left: auto;
+  }
+
+  .filter-badge.badge-indica { background: linear-gradient(135deg, #667eea, #764ba2); }
+  .filter-badge.badge-sativa { background: linear-gradient(135deg, #f093fb, #f5576c); }
+  .filter-badge.badge-hybrid { background: linear-gradient(135deg, #4facfe, #00f2fe); }
+  .filter-badge.badge-cbd { background: linear-gradient(135deg, #43e97b, #38f9d7); }
+  .filter-badge.badge-thca,
+  .filter-badge.badge-delta-9-hemp { background: linear-gradient(135deg, #fa709a, #fee140); }
+
+  .price-range {
+    gap: 1rem;
+  }
+
+  .price-inputs {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .price-input {
+    flex: 1;
+    padding: 0.5rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 0.875rem;
+  }
+
+  .btn-apply-price {
+    width: 100%;
+    padding: 0.5rem;
+    background: #f3f4f6;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+  }
+
+  .btn-apply-price:hover {
+    background: #e5e7eb;
+  }
+
+  /* Toolbar */
+  .collection-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: #f9fafb;
+    border-radius: 8px;
+  }
+
+  .toolbar-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .btn-mobile-filters {
+    display: none;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: white;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+  }
+
+  .product-count {
+    color: #6b7280;
+    font-size: 0.875rem;
+  }
+
+  .toolbar-right {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .sort-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .sort-wrapper label {
+    font-size: 0.875rem;
+    color: #6b7280;
+  }
+
+  .sort-select {
+    padding: 0.5rem 2rem 0.5rem 1rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    background: white;
+    font-size: 0.875rem;
+    cursor: pointer;
+  }
+
+  .view-toggle {
+    display: flex;
+    gap: 0.25rem;
+  }
+
+  .view-btn {
+    padding: 0.5rem;
+    background: white;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    cursor: pointer;
+    color: #9ca3af;
+    transition: all 0.2s;
+  }
+
+  .view-btn.active,
+  .view-btn:hover {
+    color: var(--color-accent, #10b981);
+    border-color: var(--color-accent, #10b981);
+  }
+
+  /* Active Filters */
+  .active-filters {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: #ecfdf5;
+    border-radius: 8px;
+    flex-wrap: wrap;
+  }
+
+  .active-filters-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #065f46;
+  }
+
+  .active-filter-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .active-filter-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.25rem 0.75rem;
+    background: white;
+    border-radius: 20px;
+    font-size: 0.8125rem;
+    font-weight: 500;
+  }
+
+  .active-filter-tag button {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    font-size: 1rem;
+    color: #6b7280;
+  }
+
+  /* Products Grid */
+  .products-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+  }
+
+  .products-grid.list-view {
+    grid-template-columns: 1fr;
+  }
+
+  /* Product Card */
+  .product-card {
+    position: relative;
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .product-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+  }
+
+  .product-card-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+  }
+
+  .product-card-media {
+    position: relative;
+    aspect-ratio: 1;
+    overflow: hidden;
+    background: #f9fafb;
+  }
+
+  .product-card-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: opacity 0.3s;
+  }
+
+  .product-card-image-hover {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .product-card:hover .product-card-image-hover {
+    opacity: 1;
+  }
+
+  .product-card-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    padding: 2rem;
+  }
+
+  .product-card-badges {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 0.375rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+  }
+
+  .badge-strain {
+    color: white;
+  }
+
+  .badge-indica { background: linear-gradient(135deg, #667eea, #764ba2); }
+  .badge-sativa { background: linear-gradient(135deg, #f093fb, #f5576c); }
+  .badge-hybrid { background: linear-gradient(135deg, #4facfe, #00f2fe); }
+  .badge-cbd { background: linear-gradient(135deg, #43e97b, #38f9d7); }
+  .badge-thca,
+  .badge-delta-9-hemp { background: linear-gradient(135deg, #fa709a, #fee140); }
+
+  .badge-sale {
+    background: #ef4444;
+    color: white;
+  }
+
+  .badge-soldout {
+    background: #6b7280;
+    color: white;
+  }
+
+  .btn-quick-view {
+    position: absolute;
+    bottom: 1rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    opacity: 0;
+    padding: 0.75rem 1.5rem;
+    background: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  }
+
+  .product-card:hover .btn-quick-view {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  .product-card-content {
+    padding: 1.25rem;
+  }
+
+  .product-card-vendor {
+    margin: 0 0 0.25rem;
+    font-size: 0.75rem;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .product-card-title {
+    margin: 0 0 0.75rem;
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.4;
+    color: #111827;
+  }
+
+  .product-card-cannabinoids {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .cannabinoid {
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+
+  .cannabinoid.thc {
+    background: #fef3c7;
+    color: #92400e;
+  }
+
+  .cannabinoid.cbd {
+    background: #d1fae5;
+    color: #065f46;
+  }
+
+  .product-card-effects {
+    display: flex;
+    gap: 0.375rem;
+    margin-bottom: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .effect-tag-small {
+    padding: 0.25rem 0.5rem;
+    background: #f3f4f6;
+    border-radius: 4px;
+    font-size: 0.6875rem;
+    color: #4b5563;
+  }
+
+  .effect-more {
+    padding: 0.25rem 0.5rem;
+    background: #e5e7eb;
+    border-radius: 4px;
+    font-size: 0.6875rem;
+    color: #6b7280;
+  }
+
+  .product-card-price {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .price-compare {
+    font-size: 0.875rem;
+    color: #9ca3af;
+    text-decoration: line-through;
+  }
+
+  .price-current {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #111827;
+  }
+
+  .price-from {
+    font-size: 0.75rem;
+    color: #6b7280;
+  }
+
+  .product-card-grade {
+    margin-top: 0.5rem;
+  }
+
+  .grade-label {
+    font-size: 0.6875rem;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .btn-quick-add {
+    display: block;
+    width: calc(100% - 2.5rem);
+    margin: 0 1.25rem 1.25rem;
+    padding: 0.75rem;
+    background: var(--color-accent, #10b981);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .btn-quick-add:hover {
+    background: var(--color-accent-dark, #059669);
+  }
+
+  .btn-select-options {
+    background: #374151;
+  }
+
+  .btn-select-options:hover {
+    background: #1f2937;
+  }
+
+  /* Pagination */
+  .collection-pagination {
+    grid-column: 1 / -1;
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid #e5e7eb;
+  }
+
+  .pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .pagination-prev,
+  .pagination-next {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    background: white;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    text-decoration: none;
+    color: #374151;
+    font-weight: 500;
+    transition: all 0.2s;
+  }
+
+  .pagination-prev:hover,
+  .pagination-next:hover {
+    background: #f3f4f6;
+    border-color: var(--color-accent, #10b981);
+  }
+
+  .pagination-numbers {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .pagination-number {
+    min-width: 40px;
+    padding: 0.75rem;
+    text-align: center;
+    background: white;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    text-decoration: none;
+    color: #374151;
+    font-weight: 500;
+    transition: all 0.2s;
+  }
+
+  .pagination-number:hover {
+    background: #f3f4f6;
+  }
+
+  .pagination-number.current {
+    background: var(--color-accent, #10b981);
+    border-color: var(--color-accent, #10b981);
+    color: white;
+  }
+
+  .pagination-number.ellipsis {
+    border: none;
+    background: none;
+  }
+
+  /* Empty State */
+  .collection-empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 4rem 2rem;
+    color: #6b7280;
+  }
+
+  .collection-empty svg {
+    margin-bottom: 1.5rem;
+    color: #d1d5db;
+  }
+
+  .collection-empty h3 {
+    margin: 0 0 0.5rem;
+    font-size: 1.25rem;
+    color: #374151;
+  }
+
+  .collection-empty p {
+    margin: 0 0 1.5rem;
+  }
+
+  .btn-browse {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    background: var(--color-accent, #10b981);
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: 600;
+  }
+
+  /* Mobile Responsive */
+  @media (max-width: 1024px) {
+    .collection-main {
+      grid-template-columns: 1fr;
+    }
+
+    .collection-filters {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 320px;
+      height: 100vh;
+      z-index: 1000;
+      transform: translateX(-100%);
+      transition: transform 0.3s;
+      border-radius: 0;
+      overflow-y: auto;
+    }
+
+    .collection-filters.open {
+      transform: translateX(0);
+    }
+
+    .mobile-filters-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 999;
+    }
+
+    .mobile-filters-overlay.open {
+      display: block;
+    }
+
+    .btn-mobile-filters {
+      display: flex;
+    }
+
+    .products-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .collection-page {
+      --collection-gap: 1rem;
+    }
+
+    .collection-main {
+      padding: 0 1rem 2rem;
+    }
+
+    .collection-title {
+      font-size: 1.75rem;
+    }
+
+    .collection-hero {
+      height: 200px;
+    }
+
+    .collection-toolbar {
+      flex-direction: column;
+      gap: 1rem;
+      align-items: stretch;
+    }
+
+    .toolbar-right {
+      justify-content: space-between;
+    }
+
+    .products-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+    }
+
+    .product-card-content {
+      padding: 1rem;
+    }
+
+    .product-card-title {
+      font-size: 0.875rem;
+    }
+
+    .btn-quick-add {
+      width: calc(100% - 2rem);
+      margin: 0 1rem 1rem;
+      padding: 0.625rem;
+      font-size: 0.875rem;
+    }
+
+    .sort-wrapper label {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  // Filter functionality
+  function applyFilters() {
+    const products = document.querySelectorAll('.product-card');
+    const checkedStrains = [...document.querySelectorAll('input[name="strain"]:checked')].map(i => i.value);
+    const checkedGrades = [...document.querySelectorAll('input[name="grade"]:checked')].map(i => i.value);
+    const checkedTHC = [...document.querySelectorAll('input[name="thc"]:checked')].map(i => i.value);
+
+    products.forEach(product => {
+      const strain = product.dataset.strain;
+      const grade = product.dataset.grade;
+      const thc = parseFloat(product.dataset.thc) || 0;
+
+      let show = true;
+
+      if (checkedStrains.length && !checkedStrains.includes(strain)) {
+        show = false;
+      }
+
+      if (checkedGrades.length && !checkedGrades.includes(grade)) {
+        show = false;
+      }
+
+      if (checkedTHC.length) {
+        let thcMatch = false;
+        if (checkedTHC.includes('low') && thc <= 15) thcMatch = true;
+        if (checkedTHC.includes('medium') && thc > 15 && thc <= 25) thcMatch = true;
+        if (checkedTHC.includes('high') && thc > 25) thcMatch = true;
+        if (!thcMatch) show = false;
+      }
+
+      product.style.display = show ? '' : 'none';
+    });
+
+    updateActiveFilters();
+    updateProductCount();
+  }
+
+  function applyPriceFilter() {
+    const min = parseFloat(document.getElementById('price-min').value) || 0;
+    const max = parseFloat(document.getElementById('price-max').value) || Infinity;
+
+    document.querySelectorAll('.product-card').forEach(product => {
+      const price = parseFloat(product.dataset.price) / 100;
+      const currentDisplay = product.style.display;
+
+      if (currentDisplay !== 'none') {
+        product.style.display = (price >= min && price <= max) ? '' : 'none';
+      }
+    });
+
+    updateProductCount();
+  }
+
+  function clearAllFilters() {
+    document.querySelectorAll('.filter-option input').forEach(input => {
+      input.checked = false;
+    });
+    document.getElementById('price-min').value = '';
+    document.getElementById('price-max').value = '';
+
+    document.querySelectorAll('.product-card').forEach(product => {
+      product.style.display = '';
+    });
+
+    updateActiveFilters();
+    updateProductCount();
+  }
+
+  function updateActiveFilters() {
+    const container = document.getElementById('active-filters');
+    const tagsContainer = document.getElementById('active-filter-tags');
+    const checkedFilters = document.querySelectorAll('.filter-option input:checked');
+
+    if (checkedFilters.length === 0) {
+      container.style.display = 'none';
+      return;
+    }
+
+    container.style.display = 'flex';
+    tagsContainer.innerHTML = '';
+
+    checkedFilters.forEach(filter => {
+      const tag = document.createElement('span');
+      tag.className = 'active-filter-tag';
+      tag.innerHTML = `${filter.closest('.filter-option').querySelector('.filter-label').textContent}<button onclick="removeFilter(this, '${filter.name}', '${filter.value}')">&times;</button>`;
+      tagsContainer.appendChild(tag);
+    });
+  }
+
+  function removeFilter(btn, name, value) {
+    const input = document.querySelector(`input[name="${name}"][value="${value}"]`);
+    if (input) {
+      input.checked = false;
+      applyFilters();
+    }
+  }
+
+  function updateProductCount() {
+    const visible = document.querySelectorAll('.product-card:not([style*="display: none"])').length;
+    document.querySelector('.product-count').textContent = `${visible} products`;
+  }
+
+  function sortProducts(sortValue) {
+    const url = new URL(window.location.href);
+    url.searchParams.set('sort_by', sortValue);
+    window.location.href = url.toString();
+  }
+
+  function setView(view) {
+    const grid = document.getElementById('products-grid');
+    const buttons = document.querySelectorAll('.view-btn');
+
+    buttons.forEach(btn => btn.classList.remove('active'));
+    document.querySelector(`[data-view="${view}"]`).classList.add('active');
+
+    if (view === 'list') {
+      grid.classList.add('list-view');
+    } else {
+      grid.classList.remove('list-view');
+    }
+
+    localStorage.setItem('collection-view', view);
+  }
+
+  function toggleMobileFilters() {
+    document.querySelector('.collection-filters').classList.toggle('open');
+    document.getElementById('mobile-filters-overlay').classList.toggle('open');
+  }
+
+  function quickAdd(variantId) {
+    fetch('/cart/add.js', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: variantId, quantity: 1 })
+    })
+    .then(res => res.json())
+    .then(data => {
+      // Update cart count
+      fetch('/cart.js')
+        .then(res => res.json())
+        .then(cart => {
+          const countEl = document.querySelector('.cart-count');
+          if (countEl) {
+            countEl.textContent = cart.item_count;
+            countEl.style.display = 'flex';
+          }
+        });
+
+      // Show success feedback
+      alert('Added to cart!');
+    })
+    .catch(err => {
+      console.error('Error adding to cart:', err);
+      alert('Error adding to cart. Please try again.');
+    });
+  }
+
+  function quickView(handle) {
+    // Could be implemented with a modal
+    window.location.href = `/products/${handle}`;
+  }
+
+  // Restore view preference
+  document.addEventListener('DOMContentLoaded', function() {
+    const savedView = localStorage.getItem('collection-view');
+    if (savedView) {
+      setView(savedView);
+    }
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Cannabis Collection",
+  "settings": [
+    {
+      "type": "range",
+      "id": "products_per_page",
+      "label": "Products per page",
+      "min": 8,
+      "max": 48,
+      "step": 4,
+      "default": 24
+    },
+    {
+      "type": "checkbox",
+      "id": "show_vendor",
+      "label": "Show product vendor",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_cannabinoids",
+      "label": "Show THC/CBD badges",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_effects",
+      "label": "Show effects preview",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_quick_add",
+      "label": "Enable quick add button",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_quick_view",
+      "label": "Enable quick view",
+      "default": true
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,152 @@
+{
+  "$schema": "https://json.schemastore.org/shopify-metafield-definitions.json",
+  "metafields": [
+    {
+      "namespace": "cannabis",
+      "key": "coa_pdf",
+      "name": "Certificate of Analysis (COA)",
+      "description": "Upload the lab test results / COA for this product",
+      "type": "file_reference",
+      "validations": [
+        {
+          "name": "file_type_inclusion",
+          "value": ["pdf"]
+        }
+      ],
+      "owner_type": "product"
+    },
+    {
+      "namespace": "cannabis",
+      "key": "strain_type",
+      "name": "Strain Type",
+      "description": "Indica, Sativa, Hybrid, CBD, or THCA",
+      "type": "single_line_text_field",
+      "validations": [
+        {
+          "name": "choices",
+          "value": ["Indica", "Sativa", "Hybrid", "CBD", "THCA", "Delta-9 Hemp"]
+        }
+      ],
+      "owner_type": "product"
+    },
+    {
+      "namespace": "cannabis",
+      "key": "thc_percentage",
+      "name": "THC Percentage",
+      "description": "THC content percentage",
+      "type": "number_decimal",
+      "validations": [
+        {
+          "name": "min",
+          "value": 0
+        },
+        {
+          "name": "max",
+          "value": 100
+        }
+      ],
+      "owner_type": "product"
+    },
+    {
+      "namespace": "cannabis",
+      "key": "cbd_percentage",
+      "name": "CBD Percentage",
+      "description": "CBD content percentage",
+      "type": "number_decimal",
+      "validations": [
+        {
+          "name": "min",
+          "value": 0
+        },
+        {
+          "name": "max",
+          "value": 100
+        }
+      ],
+      "owner_type": "product"
+    },
+    {
+      "namespace": "cannabis",
+      "key": "thca_percentage",
+      "name": "THCA Percentage",
+      "description": "THCA content percentage",
+      "type": "number_decimal",
+      "validations": [
+        {
+          "name": "min",
+          "value": 0
+        },
+        {
+          "name": "max",
+          "value": 100
+        }
+      ],
+      "owner_type": "product"
+    },
+    {
+      "namespace": "cannabis",
+      "key": "terpenes",
+      "name": "Terpene Profile",
+      "description": "List of terpenes and their percentages",
+      "type": "multi_line_text_field",
+      "owner_type": "product"
+    },
+    {
+      "namespace": "cannabis",
+      "key": "effects",
+      "name": "Effects",
+      "description": "Effects of this product (e.g., Relaxed, Happy, Focused)",
+      "type": "list.single_line_text_field",
+      "owner_type": "product"
+    },
+    {
+      "namespace": "cannabis",
+      "key": "flavors",
+      "name": "Flavors",
+      "description": "Flavor profile (e.g., Earthy, Citrus, Sweet)",
+      "type": "list.single_line_text_field",
+      "owner_type": "product"
+    },
+    {
+      "namespace": "cannabis",
+      "key": "lineage",
+      "name": "Genetic Lineage",
+      "description": "Parent strains",
+      "type": "single_line_text_field",
+      "owner_type": "product"
+    },
+    {
+      "namespace": "cannabis",
+      "key": "product_grade",
+      "name": "Product Grade",
+      "description": "Quality tier of the product",
+      "type": "single_line_text_field",
+      "validations": [
+        {
+          "name": "choices",
+          "value": ["Budget", "Mid-tier", "Premium", "Exotic"]
+        }
+      ],
+      "owner_type": "product"
+    },
+    {
+      "namespace": "cannabis",
+      "key": "harvest_date",
+      "name": "Harvest Date",
+      "description": "When this batch was harvested",
+      "type": "date",
+      "owner_type": "product"
+    },
+    {
+      "namespace": "cannabis",
+      "key": "batch_number",
+      "name": "Batch Number",
+      "description": "Batch/lot number for tracking",
+      "type": "single_line_text_field",
+      "owner_type": "product"
+    }
+  ]
+}
+
+
+

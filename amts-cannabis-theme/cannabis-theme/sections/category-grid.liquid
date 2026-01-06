@@ -1,0 +1,669 @@
+{% comment %}
+  Category Grid Section
+  Display cannabis product categories in a visually appealing grid
+{% endcomment %}
+
+<section class="category-grid-section" id="category-grid-{{ section.id }}">
+  <div class="category-grid-container">
+    {% if section.settings.heading or section.settings.subheading %}
+      <div class="section-header">
+        {% if section.settings.pre_heading %}
+          <span class="section-preheading">{{ section.settings.pre_heading }}</span>
+        {% endif %}
+        {% if section.settings.heading %}
+          <h2 class="section-heading">{{ section.settings.heading }}</h2>
+        {% endif %}
+        {% if section.settings.subheading %}
+          <p class="section-subheading">{{ section.settings.subheading }}</p>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    <div class="category-grid category-grid--{{ section.settings.layout }}">
+      {% for block in section.blocks %}
+        {% case block.type %}
+          {% when 'category' %}
+            <a href="{{ block.settings.link | default: '#' }}" class="category-card category-card--{{ block.settings.card_size }}" {{ block.shopify_attributes }}>
+              <div class="category-card-bg">
+                {% if block.settings.image %}
+                  <img
+                    src="{{ block.settings.image | img_url: '800x800', crop: 'center' }}"
+                    alt="{{ block.settings.title }}"
+                    loading="lazy"
+                    class="category-card-image"
+                  >
+                {% else %}
+                  <div class="category-card-placeholder" style="background: {{ block.settings.bg_color | default: '#1a1a2e' }};">
+                    {% if block.settings.icon == 'flower' %}
+                      <svg viewBox="0 0 64 64" fill="none" class="category-icon">
+                        <path d="M32 58c-6-8-20-24-20-34a20 20 0 1140 0c0 10-14 26-20 34z" stroke="currentColor" stroke-width="3"/>
+                        <circle cx="32" cy="24" r="8" stroke="currentColor" stroke-width="3"/>
+                      </svg>
+                    {% elsif block.settings.icon == 'edibles' %}
+                      <svg viewBox="0 0 64 64" fill="none" class="category-icon">
+                        <rect x="12" y="20" width="40" height="28" rx="6" stroke="currentColor" stroke-width="3"/>
+                        <path d="M20 32h24M32 28v8" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+                      </svg>
+                    {% elsif block.settings.icon == 'concentrates' %}
+                      <svg viewBox="0 0 64 64" fill="none" class="category-icon">
+                        <path d="M32 8v12M20 20h24l-6 36H26L20 20z" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                        <circle cx="32" cy="40" r="6" stroke="currentColor" stroke-width="3"/>
+                      </svg>
+                    {% elsif block.settings.icon == 'vapes' %}
+                      <svg viewBox="0 0 64 64" fill="none" class="category-icon">
+                        <rect x="26" y="8" width="12" height="48" rx="4" stroke="currentColor" stroke-width="3"/>
+                        <path d="M26 20h12M26 44h12" stroke="currentColor" stroke-width="3"/>
+                        <circle cx="32" cy="32" r="4" stroke="currentColor" stroke-width="3"/>
+                      </svg>
+                    {% elsif block.settings.icon == 'prerolls' %}
+                      <svg viewBox="0 0 64 64" fill="none" class="category-icon">
+                        <path d="M16 48l32-32M12 44l4 4M48 12l4 4" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+                        <path d="M20 44l24-24" stroke="currentColor" stroke-width="6" stroke-linecap="round"/>
+                      </svg>
+                    {% elsif block.settings.icon == 'topicals' %}
+                      <svg viewBox="0 0 64 64" fill="none" class="category-icon">
+                        <path d="M22 56V32a10 10 0 0120 0v24" stroke="currentColor" stroke-width="3"/>
+                        <circle cx="32" cy="16" r="8" stroke="currentColor" stroke-width="3"/>
+                        <path d="M18 56h28" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+                      </svg>
+                    {% elsif block.settings.icon == 'accessories' %}
+                      <svg viewBox="0 0 64 64" fill="none" class="category-icon">
+                        <rect x="16" y="24" width="32" height="20" rx="4" stroke="currentColor" stroke-width="3"/>
+                        <path d="M24 24V16a8 8 0 0116 0v8M32 34v4" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+                      </svg>
+                    {% else %}
+                      <svg viewBox="0 0 64 64" fill="none" class="category-icon">
+                        <circle cx="32" cy="32" r="20" stroke="currentColor" stroke-width="3"/>
+                        <path d="M32 20v12l8 8" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    {% endif %}
+                  </div>
+                {% endif %}
+                <div class="category-card-overlay"></div>
+              </div>
+
+              <div class="category-card-content">
+                {% if block.settings.badge %}
+                  <span class="category-badge">{{ block.settings.badge }}</span>
+                {% endif %}
+
+                <h3 class="category-title">{{ block.settings.title | default: 'Category' }}</h3>
+
+                {% if block.settings.description %}
+                  <p class="category-description">{{ block.settings.description }}</p>
+                {% endif %}
+
+                {% if block.settings.product_count %}
+                  <span class="category-count">{{ block.settings.product_count }} Products</span>
+                {% endif %}
+
+                <span class="category-cta">
+                  {{ block.settings.cta_text | default: 'Shop Now' }}
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </span>
+              </div>
+            </a>
+        {% endcase %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<style>
+  .category-grid-section {
+    padding: {{ section.settings.padding_top | default: 80 }}px 2rem {{ section.settings.padding_bottom | default: 80 }}px;
+    background: {{ section.settings.background_color | default: '#f9fafb' }};
+  }
+
+  .category-grid-container {
+    max-width: var(--page-width, 1400px);
+    margin: 0 auto;
+  }
+
+  /* Section Header */
+  .section-header {
+    text-align: {{ section.settings.header_alignment | default: 'center' }};
+    margin-bottom: 3rem;
+  }
+
+  .section-preheading {
+    display: block;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: {{ section.settings.accent_color | default: '#10b981' }};
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+  }
+
+  .section-heading {
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    font-weight: 800;
+    margin: 0 0 0.75rem;
+    color: {{ section.settings.heading_color | default: '#111827' }};
+  }
+
+  .section-subheading {
+    font-size: 1.125rem;
+    color: {{ section.settings.text_color | default: '#6b7280' }};
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+
+  /* Grid Layouts */
+  .category-grid {
+    display: grid;
+    gap: {{ section.settings.grid_gap | default: 20 }}px;
+  }
+
+  .category-grid--featured {
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: auto auto;
+  }
+
+  .category-grid--featured .category-card--large {
+    grid-column: span 2;
+    grid-row: span 2;
+  }
+
+  .category-grid--equal {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+
+  .category-grid--masonry {
+    grid-template-columns: repeat(3, 1fr);
+    grid-auto-rows: 200px;
+  }
+
+  .category-grid--masonry .category-card--large {
+    grid-row: span 2;
+  }
+
+  /* Category Card */
+  .category-card {
+    position: relative;
+    border-radius: {{ section.settings.card_radius | default: 16 }}px;
+    overflow: hidden;
+    text-decoration: none;
+    display: block;
+    min-height: 250px;
+    transition: transform 0.3s ease;
+  }
+
+  .category-card:hover {
+    transform: translateY(-4px);
+  }
+
+  .category-card--small {
+    min-height: 200px;
+  }
+
+  .category-card--medium {
+    min-height: 280px;
+  }
+
+  .category-card--large {
+    min-height: 400px;
+  }
+
+  .category-card-bg {
+    position: absolute;
+    inset: 0;
+  }
+
+  .category-card-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+  }
+
+  .category-card:hover .category-card-image {
+    transform: scale(1.08);
+  }
+
+  .category-card-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .category-icon {
+    width: 80px;
+    height: 80px;
+    color: rgba(255, 255, 255, 0.3);
+    transition: all 0.3s ease;
+  }
+
+  .category-card:hover .category-icon {
+    color: rgba(255, 255, 255, 0.5);
+    transform: scale(1.1);
+  }
+
+  .category-card-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to top,
+      rgba(0, 0, 0, 0.9) 0%,
+      rgba(0, 0, 0, 0.4) 50%,
+      rgba(0, 0, 0, 0.1) 100%
+    );
+    transition: background 0.3s ease;
+  }
+
+  .category-card:hover .category-card-overlay {
+    background: linear-gradient(
+      to top,
+      rgba(0, 0, 0, 0.95) 0%,
+      rgba(0, 0, 0, 0.5) 50%,
+      rgba(0, 0, 0, 0.2) 100%
+    );
+  }
+
+  /* Card Content */
+  .category-card-content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 1.5rem;
+    color: white;
+    z-index: 1;
+  }
+
+  .category-badge {
+    display: inline-block;
+    padding: 0.375rem 0.75rem;
+    background: {{ section.settings.accent_color | default: '#10b981' }};
+    border-radius: 100px;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.75rem;
+  }
+
+  .category-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem;
+    line-height: 1.2;
+    transition: color 0.3s ease;
+  }
+
+  .category-card--small .category-title {
+    font-size: 1.25rem;
+  }
+
+  .category-card--large .category-title {
+    font-size: 2rem;
+  }
+
+  .category-card:hover .category-title {
+    color: {{ section.settings.accent_color | default: '#10b981' }};
+  }
+
+  .category-description {
+    font-size: 0.9375rem;
+    color: rgba(255, 255, 255, 0.8);
+    margin: 0 0 0.75rem;
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .category-card--small .category-description {
+    display: none;
+  }
+
+  .category-count {
+    display: block;
+    font-size: 0.8125rem;
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 0.75rem;
+  }
+
+  .category-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: {{ section.settings.accent_color | default: '#10b981' }};
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.3s ease;
+  }
+
+  .category-card:hover .category-cta {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .category-cta svg {
+    transition: transform 0.2s ease;
+  }
+
+  .category-card:hover .category-cta svg {
+    transform: translateX(4px);
+  }
+
+  /* Mobile Responsive */
+  @media (max-width: 1024px) {
+    .category-grid--featured {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .category-grid--featured .category-card--large {
+      grid-column: span 2;
+      grid-row: span 1;
+    }
+
+    .category-grid--masonry {
+      grid-template-columns: repeat(2, 1fr);
+      grid-auto-rows: 180px;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .category-grid-section {
+      padding: 3rem 1rem;
+    }
+
+    .category-grid--featured,
+    .category-grid--masonry {
+      grid-template-columns: 1fr;
+    }
+
+    .category-grid--featured .category-card--large {
+      grid-column: span 1;
+    }
+
+    .category-card {
+      min-height: 200px;
+    }
+
+    .category-card--large {
+      min-height: 280px;
+    }
+
+    .category-title {
+      font-size: 1.25rem;
+    }
+
+    .category-card--large .category-title {
+      font-size: 1.5rem;
+    }
+
+    .category-cta {
+      opacity: 1;
+      transform: none;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Category Grid",
+  "tag": "section",
+  "class": "category-grid-section",
+  "max_blocks": 8,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section Header"
+    },
+    {
+      "type": "text",
+      "id": "pre_heading",
+      "label": "Pre-heading",
+      "default": "Browse Categories"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Shop by Category"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Find exactly what you're looking for"
+    },
+    {
+      "type": "select",
+      "id": "header_alignment",
+      "label": "Header Alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "header",
+      "content": "Grid Settings"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Layout Style",
+      "options": [
+        { "value": "featured", "label": "Featured (mixed sizes)" },
+        { "value": "equal", "label": "Equal Grid" },
+        { "value": "masonry", "label": "Masonry" }
+      ],
+      "default": "featured"
+    },
+    {
+      "type": "range",
+      "id": "grid_gap",
+      "label": "Grid Gap (px)",
+      "min": 10,
+      "max": 40,
+      "step": 5,
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "card_radius",
+      "label": "Card Radius (px)",
+      "min": 0,
+      "max": 24,
+      "step": 2,
+      "default": 16
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Color",
+      "default": "#f9fafb"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading Color",
+      "default": "#111827"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#6b7280"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent Color",
+      "default": "#10b981"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding Top (px)",
+      "min": 0,
+      "max": 150,
+      "step": 10,
+      "default": 80
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding Bottom (px)",
+      "min": 0,
+      "max": 150,
+      "step": 10,
+      "default": 80
+    }
+  ],
+  "blocks": [
+    {
+      "type": "category",
+      "name": "Category",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon (if no image)",
+          "options": [
+            { "value": "flower", "label": "Flower" },
+            { "value": "edibles", "label": "Edibles" },
+            { "value": "concentrates", "label": "Concentrates" },
+            { "value": "vapes", "label": "Vapes" },
+            { "value": "prerolls", "label": "Pre-Rolls" },
+            { "value": "topicals", "label": "Topicals" },
+            { "value": "accessories", "label": "Accessories" },
+            { "value": "default", "label": "Default" }
+          ],
+          "default": "flower"
+        },
+        {
+          "type": "color",
+          "id": "bg_color",
+          "label": "Background Color (if no image)",
+          "default": "#1a1a2e"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Flower"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "Description"
+        },
+        {
+          "type": "text",
+          "id": "badge",
+          "label": "Badge Text"
+        },
+        {
+          "type": "text",
+          "id": "product_count",
+          "label": "Product Count"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        },
+        {
+          "type": "text",
+          "id": "cta_text",
+          "label": "CTA Text",
+          "default": "Shop Now"
+        },
+        {
+          "type": "select",
+          "id": "card_size",
+          "label": "Card Size",
+          "options": [
+            { "value": "small", "label": "Small" },
+            { "value": "medium", "label": "Medium" },
+            { "value": "large", "label": "Large" }
+          ],
+          "default": "medium"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Category Grid",
+      "category": "Cannabis",
+      "blocks": [
+        {
+          "type": "category",
+          "settings": {
+            "title": "Flower",
+            "description": "Premium cannabis buds hand-selected for quality",
+            "icon": "flower",
+            "card_size": "large",
+            "badge": "Popular"
+          }
+        },
+        {
+          "type": "category",
+          "settings": {
+            "title": "Edibles",
+            "description": "Delicious cannabis-infused treats",
+            "icon": "edibles",
+            "card_size": "medium"
+          }
+        },
+        {
+          "type": "category",
+          "settings": {
+            "title": "Concentrates",
+            "description": "Potent extracts and dabs",
+            "icon": "concentrates",
+            "card_size": "medium"
+          }
+        },
+        {
+          "type": "category",
+          "settings": {
+            "title": "Vapes",
+            "description": "Convenient vape cartridges",
+            "icon": "vapes",
+            "card_size": "medium"
+          }
+        },
+        {
+          "type": "category",
+          "settings": {
+            "title": "Pre-Rolls",
+            "description": "Ready-to-smoke joints",
+            "icon": "prerolls",
+            "card_size": "medium"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

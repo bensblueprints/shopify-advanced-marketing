@@ -1,0 +1,614 @@
+{% comment %}
+  Herbanbud-inspired Mega Menu Header
+  Supports multi-level dropdowns with images and featured products
+{% endcomment %}
+
+<div class="announcement-bar" {% if section.settings.announcement_text == blank %}style="display:none;"{% endif %}>
+  <div class="announcement-bar__content">
+    {{ section.settings.announcement_text }}
+  </div>
+</div>
+
+<header class="site-header" id="site-header">
+  <div class="header-wrapper">
+    <div class="header-left">
+      <button class="mobile-menu-toggle" aria-label="Open menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+
+    <div class="header-center">
+      <a href="{{ routes.root_url }}" class="site-logo">
+        {% if section.settings.logo %}
+          <img src="{{ section.settings.logo | img_url: '200x' }}" alt="{{ shop.name }}" loading="lazy">
+        {% else %}
+          <span class="site-name">{{ shop.name }}</span>
+        {% endif %}
+      </a>
+    </div>
+
+    <div class="header-right">
+      <div class="header-icons">
+        {% if shop.customer_accounts_enabled %}
+          <a href="{{ routes.account_url }}" class="header-icon" aria-label="Account">
+            {{ 'icon-account.svg' | inline_asset_content }}
+          </a>
+        {% endif %}
+        
+        <a href="{{ routes.search_url }}" class="header-icon" aria-label="Search">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M14 14l4 4m-2-9a7 7 0 11-14 0 7 7 0 0114 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </a>
+        
+        <a href="{{ routes.cart_url }}" class="header-icon cart-icon" aria-label="Cart">
+          {{ 'icon-cart.svg' | inline_asset_content }}
+          <span class="cart-count" {% if cart.item_count == 0 %}style="display:none;"{% endif %}>
+            {{ cart.item_count }}
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <nav class="main-navigation" role="navigation">
+    <ul class="nav-menu">
+      {% for link in section.settings.main_menu.links %}
+        <li class="nav-item {% if link.links.size > 0 %}has-dropdown{% endif %}">
+          <a href="{{ link.url }}" class="nav-link">
+            {{ link.title }}
+            {% if link.links.size > 0 %}
+              <svg class="dropdown-arrow" width="10" height="6" viewBox="0 0 10 6" fill="none">
+                <path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            {% endif %}
+          </a>
+          
+          {% if link.links.size > 0 %}
+            <div class="mega-menu">
+              <div class="mega-menu-content">
+                <div class="mega-menu-columns">
+                  {% for child_link in link.links %}
+                    <div class="mega-menu-column">
+                      <a href="{{ child_link.url }}" class="mega-menu-title">
+                        {{ child_link.title }}
+                      </a>
+                      
+                      {% if child_link.links.size > 0 %}
+                        <ul class="mega-menu-list">
+                          {% for grandchild_link in child_link.links %}
+                            <li>
+                              <a href="{{ grandchild_link.url }}">{{ grandchild_link.title }}</a>
+                            </li>
+                          {% endfor %}
+                        </ul>
+                      {% endif %}
+                    </div>
+                  {% endfor %}
+                  
+                  {% comment %} Featured product in mega menu {% endcomment %}
+                  {% if section.settings.featured_product %}
+                    <div class="mega-menu-featured">
+                      {% assign featured = all_products[section.settings.featured_product] %}
+                      {% if featured %}
+                        <a href="{{ featured.url }}" class="featured-product-card">
+                          <img src="{{ featured.featured_image | img_url: '300x' }}" alt="{{ featured.title }}" loading="lazy">
+                          <h4>{{ featured.title }}</h4>
+                          <p class="featured-price">{{ featured.price | money }}</p>
+                        </a>
+                      {% endif %}
+                    </div>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  </nav>
+
+  <div class="age-gate-overlay" id="age-gate" {% if section.settings.show_age_gate == false %}style="display:none;"{% endif %}>
+    <div class="age-gate-modal">
+      <div class="age-gate-content">
+        <h2>{{ section.settings.age_gate_title | default: 'Age Verification' }}</h2>
+        <p>{{ section.settings.age_gate_text | default: 'You must be 21 or older to enter this site.' }}</p>
+        
+        <div class="age-gate-buttons">
+          <button class="btn btn-primary" onclick="confirmAge()">I am 21+</button>
+          <button class="btn btn-secondary" onclick="denyAge()">Under 21</button>
+        </div>
+        
+        <p class="age-gate-disclaimer">{{ section.settings.age_gate_disclaimer }}</p>
+      </div>
+    </div>
+  </div>
+</header>
+
+{% stylesheet %}
+  /* Announcement Bar */
+  .announcement-bar {
+    background: var(--color-background-accent, #f0f0f0);
+    padding: 0.75rem;
+    text-align: center;
+    font-size: 0.875rem;
+  }
+
+  /* Site Header */
+  .site-header {
+    position: sticky;
+    top: 0;
+    background: var(--color-background, #fff);
+    z-index: 1000;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  }
+
+  .header-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 2rem;
+    max-width: var(--page-width, 1400px);
+    margin: 0 auto;
+  }
+
+  .header-left,
+  .header-center,
+  .header-right {
+    flex: 1;
+  }
+
+  .header-center {
+    display: flex;
+    justify-content: center;
+  }
+
+  .header-right {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .site-logo img {
+    max-height: 60px;
+    width: auto;
+  }
+
+  .site-name {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-foreground);
+  }
+
+  .mobile-menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+  }
+
+  .mobile-menu-toggle span {
+    display: block;
+    width: 24px;
+    height: 2px;
+    background: var(--color-foreground);
+    margin: 5px 0;
+    transition: 0.3s;
+  }
+
+  .header-icons {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+  }
+
+  .header-icon {
+    position: relative;
+    color: var(--color-foreground);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+  }
+
+  .header-icon svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .cart-count {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: var(--color-accent, #000);
+    color: #fff;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 600;
+  }
+
+  /* Main Navigation */
+  .main-navigation {
+    border-top: 1px solid rgba(0,0,0,0.1);
+    padding: 0 2rem;
+    max-width: var(--page-width, 1400px);
+    margin: 0 auto;
+  }
+
+  .nav-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+  }
+
+  .nav-item {
+    position: relative;
+  }
+
+  .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1.25rem 0.5rem;
+    color: var(--color-foreground);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+
+  .nav-link:hover {
+    color: var(--color-accent, #000);
+  }
+
+  .dropdown-arrow {
+    transition: transform 0.2s;
+  }
+
+  .nav-item:hover .dropdown-arrow {
+    transform: rotate(180deg);
+  }
+
+  /* Mega Menu */
+  .mega-menu {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--color-background, #fff);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s, visibility 0.3s;
+    min-width: 700px;
+    margin-top: -1px;
+    border-radius: 0 0 8px 8px;
+  }
+
+  .nav-item:hover .mega-menu {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .mega-menu-content {
+    padding: 2rem;
+  }
+
+  .mega-menu-columns {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+  }
+
+  .mega-menu-column {
+    min-width: 0;
+  }
+
+  .mega-menu-title {
+    display: block;
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--color-foreground);
+    margin-bottom: 1rem;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .mega-menu-title:hover {
+    color: var(--color-accent);
+  }
+
+  .mega-menu-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .mega-menu-list li {
+    margin-bottom: 0.5rem;
+  }
+
+  .mega-menu-list a {
+    color: var(--color-foreground);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.2s;
+  }
+
+  .mega-menu-list a:hover {
+    color: var(--color-accent);
+  }
+
+  .mega-menu-featured {
+    border-left: 1px solid rgba(0,0,0,0.1);
+    padding-left: 2rem;
+  }
+
+  .featured-product-card {
+    display: block;
+    text-decoration: none;
+    color: var(--color-foreground);
+  }
+
+  .featured-product-card img {
+    width: 100%;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+  }
+
+  .featured-product-card h4 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1rem;
+  }
+
+  .featured-price {
+    font-weight: 600;
+    color: var(--color-accent);
+  }
+
+  /* Age Gate */
+  .age-gate-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.95);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .age-gate-modal {
+    background: var(--color-background, #fff);
+    padding: 3rem;
+    border-radius: 12px;
+    max-width: 500px;
+    text-align: center;
+  }
+
+  .age-gate-content h2 {
+    margin: 0 0 1rem 0;
+    font-size: 2rem;
+  }
+
+  .age-gate-content p {
+    margin: 0 0 2rem 0;
+    color: #666;
+  }
+
+  .age-gate-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+  }
+
+  .btn {
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+
+  .btn:hover {
+    opacity: 0.9;
+  }
+
+  .btn-primary {
+    background: var(--color-accent, #000);
+    color: #fff;
+  }
+
+  .btn-secondary {
+    background: #ccc;
+    color: #333;
+  }
+
+  .age-gate-disclaimer {
+    margin-top: 2rem;
+    font-size: 0.8rem;
+    color: #999;
+  }
+
+  /* Mobile Styles */
+  @media (max-width: 768px) {
+    .mobile-menu-toggle {
+      display: block;
+    }
+
+    .main-navigation {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      width: 100%;
+      background: var(--color-background);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+
+    .main-navigation.active {
+      display: block;
+    }
+
+    .nav-menu {
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .nav-link {
+      padding: 1rem;
+      border-bottom: 1px solid rgba(0,0,0,0.1);
+    }
+
+    .mega-menu {
+      position: static;
+      transform: none;
+      opacity: 1;
+      visibility: visible;
+      box-shadow: none;
+      display: none;
+      min-width: 0;
+    }
+
+    .nav-item.active .mega-menu {
+      display: block;
+    }
+
+    .mega-menu-columns {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+
+    .mega-menu-featured {
+      border-left: none;
+      border-top: 1px solid rgba(0,0,0,0.1);
+      padding-left: 0;
+      padding-top: 2rem;
+      margin-top: 2rem;
+    }
+
+    .header-wrapper {
+      padding: 1rem;
+    }
+
+    .main-navigation {
+      padding: 0;
+    }
+  }
+{% endstylesheet %}
+
+<script>
+  // Age Gate
+  function confirmAge() {
+    localStorage.setItem('ageVerified', 'true');
+    document.getElementById('age-gate').style.display = 'none';
+  }
+
+  function denyAge() {
+    window.location.href = 'https://www.google.com';
+  }
+
+  // Check if age was previously verified
+  if (localStorage.getItem('ageVerified') === 'true') {
+    document.getElementById('age-gate').style.display = 'none';
+  }
+
+  // Mobile menu toggle
+  document.querySelector('.mobile-menu-toggle').addEventListener('click', function() {
+    document.querySelector('.main-navigation').classList.toggle('active');
+    this.classList.toggle('active');
+  });
+
+  // Mobile dropdown toggle
+  document.querySelectorAll('.nav-item.has-dropdown > .nav-link').forEach(function(link) {
+    if (window.innerWidth <= 768) {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        this.parentElement.classList.toggle('active');
+      });
+    }
+  });
+
+  // Update cart count dynamically
+  fetch('/cart.js')
+    .then(response => response.json())
+    .then(cart => {
+      const cartCount = document.querySelector('.cart-count');
+      if (cart.item_count > 0) {
+        cartCount.textContent = cart.item_count;
+        cartCount.style.display = 'flex';
+      } else {
+        cartCount.style.display = 'none';
+      }
+    });
+</script>
+
+{% schema %}
+{
+  "name": "Mega Menu Header",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo"
+    },
+    {
+      "type": "link_list",
+      "id": "main_menu",
+      "label": "Main Menu",
+      "default": "main-menu"
+    },
+    {
+      "type": "product",
+      "id": "featured_product",
+      "label": "Featured Product (in mega menu)"
+    },
+    {
+      "type": "text",
+      "id": "announcement_text",
+      "label": "Announcement Bar Text",
+      "default": "Free shipping on orders over $100!"
+    },
+    {
+      "type": "header",
+      "content": "Age Verification"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_age_gate",
+      "label": "Enable Age Verification",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "age_gate_title",
+      "label": "Age Gate Title",
+      "default": "Age Verification Required"
+    },
+    {
+      "type": "textarea",
+      "id": "age_gate_text",
+      "label": "Age Gate Text",
+      "default": "You must be 21 years or older to access this website. By entering, you agree to our Terms of Service and Privacy Policy."
+    },
+    {
+      "type": "text",
+      "id": "age_gate_disclaimer",
+      "label": "Disclaimer Text",
+      "default": "This website requires cookies to provide all of its features."
+    }
+  ]
+}
+{% endschema %}
+
+

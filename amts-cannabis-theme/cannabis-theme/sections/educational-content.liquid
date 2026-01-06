@@ -1,0 +1,654 @@
+{% comment %}
+  Educational Content Section
+  Cannabis education and information blocks
+{% endcomment %}
+
+<section class="education-section" id="education-{{ section.id }}">
+  <div class="education-container">
+    {% if section.settings.heading or section.settings.subheading %}
+      <div class="section-header">
+        {% if section.settings.pre_heading %}
+          <span class="section-preheading">{{ section.settings.pre_heading }}</span>
+        {% endif %}
+        {% if section.settings.heading %}
+          <h2 class="section-heading">{{ section.settings.heading }}</h2>
+        {% endif %}
+        {% if section.settings.subheading %}
+          <p class="section-subheading">{{ section.settings.subheading }}</p>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    <div class="education-grid education-grid--{{ section.settings.layout }}">
+      {% for block in section.blocks %}
+        {% case block.type %}
+          {% when 'info_card' %}
+            <article class="edu-card" {{ block.shopify_attributes }}>
+              <div class="edu-card-icon" style="background: {{ block.settings.icon_bg | default: '#ecfdf5' }}; color: {{ block.settings.icon_color | default: '#10b981' }};">
+                {% case block.settings.icon %}
+                  {% when 'leaf' %}
+                    <svg viewBox="0 0 24 24" fill="none"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.93 0 1.82-.13 2.66-.37a.5.5 0 00.34-.63 8 8 0 01-1.5-4.5c0-4.42 3.58-8 8-8a.5.5 0 00.5-.5A10 10 0 0012 2z" stroke="currentColor" stroke-width="2"/></svg>
+                  {% when 'flask' %}
+                    <svg viewBox="0 0 24 24" fill="none"><path d="M9 3h6M10 9V3M14 9V3M5 21h14a2 2 0 001.64-3.14L15 9H9l-5.64 8.86A2 2 0 005 21z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  {% when 'shield' %}
+                    <svg viewBox="0 0 24 24" fill="none"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  {% when 'book' %}
+                    <svg viewBox="0 0 24 24" fill="none"><path d="M4 19.5A2.5 2.5 0 016.5 17H20M4 19.5A2.5 2.5 0 014 17V5a2 2 0 012-2h14v14H6.5A2.5 2.5 0 004 19.5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  {% when 'heart' %}
+                    <svg viewBox="0 0 24 24" fill="none"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  {% when 'droplet' %}
+                    <svg viewBox="0 0 24 24" fill="none"><path d="M12 2.69l5.66 5.66a8 8 0 11-11.31 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  {% else %}
+                    <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path d="M12 8v4l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                {% endcase %}
+              </div>
+
+              <h3 class="edu-card-title">{{ block.settings.title }}</h3>
+              <p class="edu-card-content">{{ block.settings.content }}</p>
+
+              {% if block.settings.link %}
+                <a href="{{ block.settings.link }}" class="edu-card-link">
+                  {{ block.settings.link_text | default: 'Learn More' }}
+                  <svg width="16" height="16" viewBox="0 0 16 16"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+                </a>
+              {% endif %}
+            </article>
+
+          {% when 'strain_guide' %}
+            <div class="strain-guide-card" {{ block.shopify_attributes }}>
+              <h3 class="strain-guide-title">{{ block.settings.title | default: 'Understanding Strain Types' }}</h3>
+
+              <div class="strain-types-grid">
+                <div class="strain-type indica">
+                  <div class="strain-type-header">
+                    <span class="strain-dot"></span>
+                    <h4>Indica</h4>
+                  </div>
+                  <p>{{ block.settings.indica_desc | default: 'Known for relaxing, sedative effects. Great for nighttime use, pain relief, and sleep.' }}</p>
+                </div>
+
+                <div class="strain-type sativa">
+                  <div class="strain-type-header">
+                    <span class="strain-dot"></span>
+                    <h4>Sativa</h4>
+                  </div>
+                  <p>{{ block.settings.sativa_desc | default: 'Energizing and uplifting effects. Ideal for daytime use, creativity, and social activities.' }}</p>
+                </div>
+
+                <div class="strain-type hybrid">
+                  <div class="strain-type-header">
+                    <span class="strain-dot"></span>
+                    <h4>Hybrid</h4>
+                  </div>
+                  <p>{{ block.settings.hybrid_desc | default: 'Balanced combination of indica and sativa. Offers versatile effects depending on the specific strain.' }}</p>
+                </div>
+              </div>
+            </div>
+
+          {% when 'cannabinoid_guide' %}
+            <div class="cannabinoid-guide-card" {{ block.shopify_attributes }}>
+              <h3 class="cannabinoid-guide-title">{{ block.settings.title | default: 'Cannabinoid Guide' }}</h3>
+
+              <div class="cannabinoid-list">
+                <div class="cannabinoid-item">
+                  <div class="cannabinoid-badge thc">THC</div>
+                  <div class="cannabinoid-info">
+                    <h4>Delta-9 THC</h4>
+                    <p>{{ block.settings.thc_desc | default: 'The primary psychoactive compound. Produces euphoria, relaxation, and altered perception.' }}</p>
+                  </div>
+                </div>
+
+                <div class="cannabinoid-item">
+                  <div class="cannabinoid-badge cbd">CBD</div>
+                  <div class="cannabinoid-info">
+                    <h4>Cannabidiol</h4>
+                    <p>{{ block.settings.cbd_desc | default: 'Non-psychoactive. Known for anti-inflammatory, anti-anxiety, and pain-relieving properties.' }}</p>
+                  </div>
+                </div>
+
+                <div class="cannabinoid-item">
+                  <div class="cannabinoid-badge thca">THCA</div>
+                  <div class="cannabinoid-info">
+                    <h4>Tetrahydrocannabinolic Acid</h4>
+                    <p>{{ block.settings.thca_desc | default: 'Non-psychoactive precursor to THC. Must be heated (decarboxylated) to convert to THC.' }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+        {% endcase %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<style>
+  .education-section {
+    padding: {{ section.settings.padding_top | default: 80 }}px 2rem {{ section.settings.padding_bottom | default: 80 }}px;
+    background: {{ section.settings.background_color | default: '#ffffff' }};
+  }
+
+  .education-container {
+    max-width: var(--page-width, 1400px);
+    margin: 0 auto;
+  }
+
+  .section-header {
+    text-align: {{ section.settings.header_alignment | default: 'center' }};
+    margin-bottom: 3rem;
+  }
+
+  .section-preheading {
+    display: block;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: {{ section.settings.accent_color | default: '#10b981' }};
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+  }
+
+  .section-heading {
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    font-weight: 800;
+    margin: 0 0 0.75rem;
+    color: {{ section.settings.heading_color | default: '#111827' }};
+  }
+
+  .section-subheading {
+    font-size: 1.125rem;
+    color: {{ section.settings.text_color | default: '#6b7280' }};
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+
+  /* Education Grid */
+  .education-grid {
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  .education-grid--cards {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  }
+
+  .education-grid--featured {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  /* Info Card */
+  .edu-card {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    border: 1px solid #f3f4f6;
+  }
+
+  .edu-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+  }
+
+  .edu-card-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.25rem;
+  }
+
+  .edu-card-icon svg {
+    width: 28px;
+    height: 28px;
+  }
+
+  .edu-card-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 0 0 0.75rem;
+    color: #111827;
+  }
+
+  .edu-card-content {
+    font-size: 0.9375rem;
+    color: #6b7280;
+    line-height: 1.6;
+    margin: 0 0 1rem;
+  }
+
+  .edu-card-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: {{ section.settings.accent_color | default: '#10b981' }};
+    text-decoration: none;
+    transition: gap 0.2s;
+  }
+
+  .edu-card-link:hover {
+    gap: 0.75rem;
+  }
+
+  /* Strain Guide Card */
+  .strain-guide-card {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border: 1px solid #f3f4f6;
+    grid-column: span 2;
+  }
+
+  .strain-guide-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0 0 1.5rem;
+    color: #111827;
+  }
+
+  .strain-types-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+  }
+
+  .strain-type {
+    padding: 1.25rem;
+    border-radius: 12px;
+    background: #f9fafb;
+  }
+
+  .strain-type-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .strain-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+  }
+
+  .strain-type.indica .strain-dot {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+  }
+
+  .strain-type.sativa .strain-dot {
+    background: linear-gradient(135deg, #f093fb, #f5576c);
+  }
+
+  .strain-type.hybrid .strain-dot {
+    background: linear-gradient(135deg, #4facfe, #00f2fe);
+  }
+
+  .strain-type h4 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #111827;
+  }
+
+  .strain-type p {
+    margin: 0;
+    font-size: 0.875rem;
+    color: #6b7280;
+    line-height: 1.5;
+  }
+
+  /* Cannabinoid Guide Card */
+  .cannabinoid-guide-card {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border: 1px solid #f3f4f6;
+  }
+
+  .cannabinoid-guide-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0 0 1.5rem;
+    color: #111827;
+  }
+
+  .cannabinoid-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .cannabinoid-item {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem;
+    background: #f9fafb;
+    border-radius: 10px;
+  }
+
+  .cannabinoid-badge {
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: white;
+    flex-shrink: 0;
+  }
+
+  .cannabinoid-badge.thc { background: linear-gradient(135deg, #fbbf24, #f59e0b); }
+  .cannabinoid-badge.cbd { background: linear-gradient(135deg, #10b981, #059669); }
+  .cannabinoid-badge.thca { background: linear-gradient(135deg, #f472b6, #ec4899); }
+
+  .cannabinoid-info h4 {
+    margin: 0 0 0.375rem;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: #111827;
+  }
+
+  .cannabinoid-info p {
+    margin: 0;
+    font-size: 0.8125rem;
+    color: #6b7280;
+    line-height: 1.5;
+  }
+
+  /* Mobile Responsive */
+  @media (max-width: 1024px) {
+    .education-grid--featured {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .strain-guide-card {
+      grid-column: span 2;
+    }
+
+    .strain-types-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .education-section {
+      padding: 3rem 1rem;
+    }
+
+    .education-grid--featured {
+      grid-template-columns: 1fr;
+    }
+
+    .strain-guide-card,
+    .cannabinoid-guide-card {
+      grid-column: span 1;
+    }
+
+    .edu-card {
+      padding: 1.5rem;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Educational Content",
+  "tag": "section",
+  "class": "education-section",
+  "max_blocks": 12,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section Header"
+    },
+    {
+      "type": "text",
+      "id": "pre_heading",
+      "label": "Pre-heading",
+      "default": "Learn"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Cannabis Education"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Everything you need to know about cannabis"
+    },
+    {
+      "type": "select",
+      "id": "header_alignment",
+      "label": "Header Alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Layout",
+      "options": [
+        { "value": "cards", "label": "Card Grid" },
+        { "value": "featured", "label": "Featured Layout" }
+      ],
+      "default": "cards"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading Color",
+      "default": "#111827"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#6b7280"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent Color",
+      "default": "#10b981"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding Top (px)",
+      "min": 0,
+      "max": 150,
+      "step": 10,
+      "default": 80
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding Bottom (px)",
+      "min": 0,
+      "max": 150,
+      "step": 10,
+      "default": 80
+    }
+  ],
+  "blocks": [
+    {
+      "type": "info_card",
+      "name": "Info Card",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            { "value": "leaf", "label": "Leaf" },
+            { "value": "flask", "label": "Flask" },
+            { "value": "shield", "label": "Shield" },
+            { "value": "book", "label": "Book" },
+            { "value": "heart", "label": "Heart" },
+            { "value": "droplet", "label": "Droplet" }
+          ],
+          "default": "leaf"
+        },
+        {
+          "type": "color",
+          "id": "icon_bg",
+          "label": "Icon Background",
+          "default": "#ecfdf5"
+        },
+        {
+          "type": "color",
+          "id": "icon_color",
+          "label": "Icon Color",
+          "default": "#10b981"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "What is Cannabis?"
+        },
+        {
+          "type": "textarea",
+          "id": "content",
+          "label": "Content",
+          "default": "Cannabis is a plant known for its therapeutic and recreational properties."
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        },
+        {
+          "type": "text",
+          "id": "link_text",
+          "label": "Link Text",
+          "default": "Learn More"
+        }
+      ]
+    },
+    {
+      "type": "strain_guide",
+      "name": "Strain Guide",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Understanding Strain Types"
+        },
+        {
+          "type": "textarea",
+          "id": "indica_desc",
+          "label": "Indica Description",
+          "default": "Known for relaxing, sedative effects. Great for nighttime use, pain relief, and sleep."
+        },
+        {
+          "type": "textarea",
+          "id": "sativa_desc",
+          "label": "Sativa Description",
+          "default": "Energizing and uplifting effects. Ideal for daytime use, creativity, and social activities."
+        },
+        {
+          "type": "textarea",
+          "id": "hybrid_desc",
+          "label": "Hybrid Description",
+          "default": "Balanced combination of indica and sativa. Offers versatile effects depending on the specific strain."
+        }
+      ]
+    },
+    {
+      "type": "cannabinoid_guide",
+      "name": "Cannabinoid Guide",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Cannabinoid Guide"
+        },
+        {
+          "type": "textarea",
+          "id": "thc_desc",
+          "label": "THC Description",
+          "default": "The primary psychoactive compound. Produces euphoria, relaxation, and altered perception."
+        },
+        {
+          "type": "textarea",
+          "id": "cbd_desc",
+          "label": "CBD Description",
+          "default": "Non-psychoactive. Known for anti-inflammatory, anti-anxiety, and pain-relieving properties."
+        },
+        {
+          "type": "textarea",
+          "id": "thca_desc",
+          "label": "THCA Description",
+          "default": "Non-psychoactive precursor to THC. Must be heated (decarboxylated) to convert to THC."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Educational Content",
+      "category": "Cannabis",
+      "blocks": [
+        {
+          "type": "info_card",
+          "settings": {
+            "icon": "leaf",
+            "title": "What is Cannabis?",
+            "content": "Cannabis is a flowering plant with therapeutic and recreational properties, containing compounds called cannabinoids."
+          }
+        },
+        {
+          "type": "info_card",
+          "settings": {
+            "icon": "flask",
+            "title": "Lab Testing",
+            "content": "All our products undergo rigorous third-party lab testing for potency, pesticides, and contaminants."
+          }
+        },
+        {
+          "type": "info_card",
+          "settings": {
+            "icon": "shield",
+            "title": "Safe Consumption",
+            "content": "Start low and go slow. We provide dosing guidelines to ensure a safe and enjoyable experience."
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

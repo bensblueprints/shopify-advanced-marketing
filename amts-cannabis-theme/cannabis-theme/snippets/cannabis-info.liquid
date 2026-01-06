@@ -1,0 +1,409 @@
+{% comment %}
+  Cannabis Product Information Display
+  Shows THC/CBD, strain type, effects, terpenes, and COA
+{% endcomment %}
+
+{% assign strain_type = product.metafields.cannabis.strain_type %}
+{% assign thc = product.metafields.cannabis.thc_percentage %}
+{% assign cbd = product.metafields.cannabis.cbd_percentage %}
+{% assign thca = product.metafields.cannabis.thca_percentage %}
+{% assign effects = product.metafields.cannabis.effects.value %}
+{% assign flavors = product.metafields.cannabis.flavors.value %}
+{% assign terpenes = product.metafields.cannabis.terpenes %}
+{% assign lineage = product.metafields.cannabis.lineage %}
+{% assign coa = product.metafields.cannabis.coa_pdf %}
+{% assign grade = product.metafields.cannabis.product_grade %}
+
+<div class="cannabis-info">
+  {% if strain_type or grade %}
+    <div class="cannabis-badges">
+      {% if strain_type %}
+        <span class="badge badge-strain badge-{{ strain_type | downcase | handle }}">
+          {{ strain_type }}
+        </span>
+      {% endif %}
+      
+      {% if grade %}
+        <span class="badge badge-grade">
+          {{ grade }}
+        </span>
+      {% endif %}
+    </div>
+  {% endif %}
+
+  {% if thc or cbd or thca %}
+    <div class="cannabinoid-info">
+      <h3 class="cannabinoid-title">Cannabinoid Content</h3>
+      <div class="cannabinoid-grid">
+        {% if thc %}
+          <div class="cannabinoid-item">
+            <div class="cannabinoid-label">THC</div>
+            <div class="cannabinoid-value">{{ thc }}%</div>
+          </div>
+        {% endif %}
+        
+        {% if cbd %}
+          <div class="cannabinoid-item">
+            <div class="cannabinoid-label">CBD</div>
+            <div class="cannabinoid-value">{{ cbd }}%</div>
+          </div>
+        {% endif %}
+        
+        {% if thca %}
+          <div class="cannabinoid-item">
+            <div class="cannabinoid-label">THCA</div>
+            <div class="cannabinoid-value">{{ thca }}%</div>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  {% endif %}
+
+  {% if effects %}
+    <div class="effects-section">
+      <h3 class="effects-title">Effects</h3>
+      <div class="effects-tags">
+        {% for effect in effects %}
+          <span class="effect-tag">{{ effect }}</span>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+
+  {% if flavors %}
+    <div class="flavors-section">
+      <h3 class="flavors-title">Flavors</h3>
+      <div class="flavor-tags">
+        {% for flavor in flavors %}
+          <span class="flavor-tag">{{ flavor }}</span>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+
+  {% if terpenes %}
+    <div class="terpenes-section">
+      <h3 class="terpenes-title">Terpene Profile</h3>
+      <div class="terpenes-content">
+        {{ terpenes | newline_to_br }}
+      </div>
+    </div>
+  {% endif %}
+
+  {% if lineage %}
+    <div class="lineage-section">
+      <h3 class="lineage-title">Genetic Lineage</h3>
+      <p class="lineage-content">{{ lineage }}</p>
+    </div>
+  {% endif %}
+
+  {% if coa %}
+    <div class="coa-section">
+      <button class="btn-coa" onclick="openCOA('{{ coa.value }}')">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path d="M12 2H6a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V6l-4-4z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M12 2v4h4M10 13l2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        View Lab Results (COA)
+      </button>
+    </div>
+  {% endif %}
+
+  <div class="compliance-disclaimer">
+    <p><small>{{ section.settings.disclaimer_text | default: 'These statements have not been evaluated by the FDA. This product is not intended to diagnose, treat, cure, or prevent any disease.' }}</small></p>
+  </div>
+</div>
+
+{% comment %} COA Modal {% endcomment %}
+<div id="coa-modal" class="coa-modal" style="display: none;">
+  <div class="coa-modal-overlay" onclick="closeCOA()"></div>
+  <div class="coa-modal-content">
+    <button class="coa-modal-close" onclick="closeCOA()">&times;</button>
+    <iframe id="coa-iframe" src="" width="100%" height="600px" frameborder="0"></iframe>
+    <div class="coa-modal-actions">
+      <a id="coa-download" href="" download class="btn btn-primary">Download PDF</a>
+    </div>
+  </div>
+</div>
+
+<style>
+  .cannabis-info {
+    margin: 2rem 0;
+  }
+
+  .cannabis-badges {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  .badge-strain {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+  }
+
+  .badge-strain.badge-indica {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  }
+
+  .badge-strain.badge-sativa {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  }
+
+  .badge-strain.badge-hybrid {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  }
+
+  .badge-strain.badge-cbd {
+    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+  }
+
+  .badge-strain.badge-thca,
+  .badge-strain.badge-delta-9-hemp {
+    background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+  }
+
+  .badge-grade {
+    background: #f3f4f6;
+    color: #374151;
+  }
+
+  .cannabinoid-info,
+  .effects-section,
+  .flavors-section,
+  .terpenes-section,
+  .lineage-section {
+    margin: 1.5rem 0;
+    padding: 1.5rem;
+    background: #f9fafb;
+    border-radius: 8px;
+  }
+
+  .cannabinoid-title,
+  .effects-title,
+  .flavors-title,
+  .terpenes-title,
+  .lineage-title {
+    margin: 0 0 1rem 0;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #111827;
+  }
+
+  .cannabinoid-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 1rem;
+  }
+
+  .cannabinoid-item {
+    text-align: center;
+    padding: 1rem;
+    background: white;
+    border-radius: 6px;
+  }
+
+  .cannabinoid-label {
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin-bottom: 0.5rem;
+  }
+
+  .cannabinoid-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #111827;
+  }
+
+  .effects-tags,
+  .flavor-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .effect-tag,
+  .flavor-tag {
+    padding: 0.5rem 1rem;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    color: #374151;
+  }
+
+  .terpenes-content {
+    line-height: 1.6;
+    color: #4b5563;
+  }
+
+  .lineage-content {
+    margin: 0;
+    font-style: italic;
+    color: #6b7280;
+  }
+
+  .coa-section {
+    margin: 2rem 0;
+  }
+
+  .btn-coa {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem 2rem;
+    background: #10b981;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .btn-coa:hover {
+    background: #059669;
+  }
+
+  .btn-coa svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .compliance-disclaimer {
+    margin-top: 2rem;
+    padding: 1rem;
+    background: #fef3c7;
+    border-left: 4px solid #f59e0b;
+    border-radius: 4px;
+  }
+
+  .compliance-disclaimer p {
+    margin: 0;
+    color: #92400e;
+  }
+
+  /* COA Modal */
+  .coa-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .coa-modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.75);
+  }
+
+  .coa-modal-content {
+    position: relative;
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    max-width: 900px;
+    width: 90%;
+    max-height: 90vh;
+    overflow: auto;
+    z-index: 10000;
+  }
+
+  .coa-modal-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    font-size: 2rem;
+    cursor: pointer;
+    color: #6b7280;
+    z-index: 10001;
+  }
+
+  .coa-modal-close:hover {
+    color: #111827;
+  }
+
+  .coa-modal-actions {
+    margin-top: 1rem;
+    text-align: center;
+  }
+
+  .btn-primary {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    background: #3b82f6;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: 600;
+    transition: background 0.2s;
+  }
+
+  .btn-primary:hover {
+    background: #2563eb;
+  }
+
+  @media (max-width: 768px) {
+    .cannabinoid-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .coa-modal-content {
+      width: 95%;
+      padding: 1rem;
+    }
+
+    #coa-iframe {
+      height: 400px;
+    }
+  }
+</style>
+
+<script>
+  function openCOA(coaUrl) {
+    const modal = document.getElementById('coa-modal');
+    const iframe = document.getElementById('coa-iframe');
+    const download = document.getElementById('coa-download');
+    
+    iframe.src = coaUrl;
+    download.href = coaUrl;
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeCOA() {
+    const modal = document.getElementById('coa-modal');
+    modal.style.display = 'none';
+    document.body.style.overflow = '';
+  }
+
+  // Close modal on ESC key
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      closeCOA();
+    }
+  });
+</script>
+
+
