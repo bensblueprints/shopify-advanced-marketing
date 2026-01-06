@@ -1,0 +1,496 @@
+{% comment %}
+  Age Gate Snippet
+  Site-wide age verification modal that uses theme settings.
+  Include this snippet in theme.liquid before the closing </body> tag.
+
+  Settings used:
+  - settings.age_gate_enabled
+  - settings.age_gate_type (simple, dob, checkbox)
+  - settings.age_gate_minimum_age
+  - settings.age_gate_cookie_days
+  - settings.age_gate_logo
+  - settings.age_gate_heading
+  - settings.age_gate_message
+  - settings.age_gate_confirm_text
+  - settings.age_gate_deny_text
+  - settings.age_gate_deny_redirect
+  - settings.age_gate_overlay_color
+  - settings.age_gate_overlay_opacity
+  - settings.age_gate_modal_bg
+  - settings.age_gate_background_image
+{% endcomment %}
+
+{% if settings.age_gate_enabled %}
+  {% assign age_gate_type = settings.age_gate_type | default: 'simple' %}
+  {% assign minimum_age = settings.age_gate_minimum_age | default: 21 %}
+  {% assign cookie_days = settings.age_gate_cookie_days | default: 30 %}
+  {% assign heading = settings.age_gate_heading | default: 'Age Verification Required' %}
+  {% assign message = settings.age_gate_message | default: 'You must be 21 years of age or older to view this website.' %}
+  {% assign confirm_text = settings.age_gate_confirm_text | default: "Yes, I'm 21+" %}
+  {% assign deny_text = settings.age_gate_deny_text | default: "No, I'm Under 21" %}
+
+  <div id="age-gate-overlay" class="age-gate-overlay" style="display: none;">
+    <div class="age-gate-modal">
+      {% if settings.age_gate_logo %}
+        <div class="age-gate-logo">
+          <img
+            src="{{ settings.age_gate_logo | image_url: width: 200 }}"
+            alt="{{ shop.name }}"
+            width="200"
+            height="auto"
+          >
+        </div>
+      {% else %}
+        <div class="age-gate-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            <path d="M12 8v4"/>
+            <path d="M12 16h.01"/>
+          </svg>
+        </div>
+      {% endif %}
+
+      <h2 class="age-gate-heading">{{ heading }}</h2>
+      <p class="age-gate-message">{{ message }}</p>
+
+      {% case age_gate_type %}
+        {% when 'simple' %}
+          <div class="age-gate-buttons">
+            <button type="button" class="age-gate-btn age-gate-btn--confirm" data-age-verify="confirm">
+              {{ confirm_text }}
+            </button>
+            <button type="button" class="age-gate-btn age-gate-btn--deny" data-age-verify="deny">
+              {{ deny_text }}
+            </button>
+          </div>
+
+        {% when 'dob' %}
+          <form class="age-gate-form" id="age-gate-dob-form">
+            <div class="age-gate-dob-fields">
+              <div class="age-gate-field">
+                <label for="age-gate-month">Month</label>
+                <select id="age-gate-month" required>
+                  <option value="">MM</option>
+                  {% for i in (1..12) %}
+                    <option value="{{ i }}">{{ i | prepend: '00' | slice: -2, 2 }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="age-gate-field">
+                <label for="age-gate-day">Day</label>
+                <select id="age-gate-day" required>
+                  <option value="">DD</option>
+                  {% for i in (1..31) %}
+                    <option value="{{ i }}">{{ i | prepend: '00' | slice: -2, 2 }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="age-gate-field">
+                <label for="age-gate-year">Year</label>
+                <select id="age-gate-year" required>
+                  <option value="">YYYY</option>
+                  {% assign current_year = 'now' | date: '%Y' | plus: 0 %}
+                  {% assign start_year = current_year | minus: 100 %}
+                  {% for i in (0..100) %}
+                    {% assign year = current_year | minus: i %}
+                    <option value="{{ year }}">{{ year }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+            <p class="age-gate-dob-error" id="age-gate-dob-error" style="display: none;">
+              You must be {{ minimum_age }} or older to enter this site.
+            </p>
+            <button type="submit" class="age-gate-btn age-gate-btn--confirm">
+              Verify Age
+            </button>
+          </form>
+
+        {% when 'checkbox' %}
+          <form class="age-gate-form" id="age-gate-checkbox-form">
+            <label class="age-gate-checkbox-label">
+              <input type="checkbox" id="age-gate-checkbox" required>
+              <span class="age-gate-checkbox-text">
+                I confirm that I am {{ minimum_age }} years of age or older and agree to the
+                <a href="{{ settings.link_terms_of_service | default: '/policies/terms-of-service' }}" target="_blank">Terms of Service</a>
+                and
+                <a href="{{ settings.link_privacy_policy | default: '/policies/privacy-policy' }}" target="_blank">Privacy Policy</a>.
+              </span>
+            </label>
+            <button type="submit" class="age-gate-btn age-gate-btn--confirm" disabled>
+              {{ confirm_text }}
+            </button>
+          </form>
+      {% endcase %}
+
+      <p class="age-gate-footer">
+        By entering this site, you agree to our
+        <a href="{{ settings.link_terms_of_service | default: '/policies/terms-of-service' }}">Terms of Service</a>
+        and
+        <a href="{{ settings.link_privacy_policy | default: '/policies/privacy-policy' }}">Privacy Policy</a>.
+      </p>
+    </div>
+  </div>
+
+  <style>
+    .age-gate-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: {{ settings.age_gate_overlay_color | default: '#0f0f1a' }};
+      {% if settings.age_gate_background_image %}
+        background-image: linear-gradient(
+          rgba(15, 15, 26, {{ settings.age_gate_overlay_opacity | default: 0.95 }}),
+          rgba(15, 15, 26, {{ settings.age_gate_overlay_opacity | default: 0.95 }})
+        ), url('{{ settings.age_gate_background_image | image_url: width: 1920 }}');
+        background-size: cover;
+        background-position: center;
+      {% endif %}
+      z-index: var(--z-age-gate, 1000);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .age-gate-modal {
+      background-color: {{ settings.age_gate_modal_bg | default: '#1a1a2e' }};
+      border-radius: var(--border-radius-large, 20px);
+      padding: 2.5rem;
+      max-width: 480px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      animation: slideUp 0.4s ease 0.1s both;
+    }
+
+    .age-gate-logo {
+      margin-bottom: 1.5rem;
+    }
+
+    .age-gate-logo img {
+      max-width: 200px;
+      height: auto;
+    }
+
+    .age-gate-icon {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 1.5rem;
+      background: linear-gradient(135deg, var(--color-primary, #10b981), var(--color-secondary, #059669));
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+    }
+
+    .age-gate-heading {
+      font-family: var(--font-heading, 'Poppins', sans-serif);
+      font-size: 1.75rem;
+      font-weight: 600;
+      color: var(--color-text, #ffffff);
+      margin: 0 0 1rem 0;
+    }
+
+    .age-gate-message {
+      font-size: 1rem;
+      color: var(--color-text-muted, #9ca3af);
+      line-height: 1.6;
+      margin: 0 0 2rem 0;
+    }
+
+    .age-gate-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .age-gate-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem 2rem;
+      font-family: var(--font-body, 'Inter', sans-serif);
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: var(--border-radius-small, 8px);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: none;
+      width: 100%;
+    }
+
+    .age-gate-btn--confirm {
+      background: linear-gradient(135deg, var(--color-primary, #10b981), var(--color-secondary, #059669));
+      color: white;
+    }
+
+    .age-gate-btn--confirm:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px -5px rgba(16, 185, 129, 0.4);
+    }
+
+    .age-gate-btn--confirm:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .age-gate-btn--deny {
+      background-color: transparent;
+      color: var(--color-text-muted, #9ca3af);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .age-gate-btn--deny:hover {
+      background-color: rgba(255, 255, 255, 0.05);
+      color: var(--color-text, #ffffff);
+    }
+
+    /* DOB Form Styles */
+    .age-gate-form {
+      margin-bottom: 1.5rem;
+    }
+
+    .age-gate-dob-fields {
+      display: flex;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .age-gate-field {
+      flex: 1;
+    }
+
+    .age-gate-field label {
+      display: block;
+      font-size: 0.75rem;
+      color: var(--color-text-muted, #9ca3af);
+      margin-bottom: 0.25rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .age-gate-field select {
+      width: 100%;
+      padding: 0.75rem;
+      font-size: 1rem;
+      color: var(--color-text, #ffffff);
+      background-color: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: var(--border-radius-small, 8px);
+      cursor: pointer;
+    }
+
+    .age-gate-field select:focus {
+      outline: none;
+      border-color: var(--color-primary, #10b981);
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+    }
+
+    .age-gate-dob-error {
+      color: #ef4444;
+      font-size: 0.875rem;
+      margin-bottom: 1rem;
+    }
+
+    /* Checkbox Form Styles */
+    .age-gate-checkbox-label {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      text-align: left;
+      cursor: pointer;
+      margin-bottom: 1.5rem;
+    }
+
+    .age-gate-checkbox-label input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      margin-top: 0.125rem;
+      cursor: pointer;
+      accent-color: var(--color-primary, #10b981);
+    }
+
+    .age-gate-checkbox-text {
+      font-size: 0.875rem;
+      color: var(--color-text-muted, #9ca3af);
+      line-height: 1.5;
+    }
+
+    .age-gate-checkbox-text a {
+      color: var(--color-primary, #10b981);
+      text-decoration: underline;
+    }
+
+    .age-gate-footer {
+      font-size: 0.75rem;
+      color: var(--color-text-muted, #9ca3af);
+      margin-top: 1.5rem;
+    }
+
+    .age-gate-footer a {
+      color: var(--color-primary, #10b981);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Mobile responsiveness */
+    @media (max-width: 480px) {
+      .age-gate-modal {
+        padding: 1.5rem;
+      }
+
+      .age-gate-heading {
+        font-size: 1.5rem;
+      }
+
+      .age-gate-dob-fields {
+        flex-direction: column;
+      }
+    }
+  </style>
+
+  <script>
+    (function() {
+      const COOKIE_NAME = 'age_verified';
+      const COOKIE_DAYS = {{ cookie_days }};
+      const MINIMUM_AGE = {{ minimum_age }};
+      const DENY_REDIRECT = '{{ settings.age_gate_deny_redirect | default: "https://google.com" }}';
+      const VERIFICATION_TYPE = '{{ age_gate_type }}';
+
+      // Check if already verified
+      function isVerified() {
+        return document.cookie.split(';').some(function(item) {
+          return item.trim().indexOf(COOKIE_NAME + '=') === 0;
+        });
+      }
+
+      // Set verification cookie
+      function setVerified() {
+        const date = new Date();
+        date.setTime(date.getTime() + (COOKIE_DAYS * 24 * 60 * 60 * 1000));
+        document.cookie = COOKIE_NAME + '=true;expires=' + date.toUTCString() + ';path=/;SameSite=Lax';
+      }
+
+      // Handle denial
+      function handleDeny() {
+        window.location.href = DENY_REDIRECT;
+      }
+
+      // Hide age gate and enable scrolling
+      function hideAgeGate() {
+        const overlay = document.getElementById('age-gate-overlay');
+        if (overlay) {
+          overlay.style.opacity = '0';
+          setTimeout(function() {
+            overlay.style.display = 'none';
+          }, 300);
+        }
+        document.body.style.overflow = '';
+      }
+
+      // Show age gate and disable scrolling
+      function showAgeGate() {
+        const overlay = document.getElementById('age-gate-overlay');
+        if (overlay) {
+          overlay.style.display = 'flex';
+          document.body.style.overflow = 'hidden';
+        }
+      }
+
+      // Calculate age from date
+      function calculateAge(birthDate) {
+        const today = new Date();
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const monthDiff = today.getMonth() - birthDate.getMonth();
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+          age--;
+        }
+        return age;
+      }
+
+      // Initialize
+      document.addEventListener('DOMContentLoaded', function() {
+        if (isVerified()) {
+          const overlay = document.getElementById('age-gate-overlay');
+          if (overlay) overlay.remove();
+          return;
+        }
+
+        showAgeGate();
+
+        // Simple verification buttons
+        document.querySelectorAll('[data-age-verify="confirm"]').forEach(function(btn) {
+          btn.addEventListener('click', function() {
+            setVerified();
+            hideAgeGate();
+          });
+        });
+
+        document.querySelectorAll('[data-age-verify="deny"]').forEach(function(btn) {
+          btn.addEventListener('click', handleDeny);
+        });
+
+        // DOB form handling
+        const dobForm = document.getElementById('age-gate-dob-form');
+        if (dobForm) {
+          dobForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const month = parseInt(document.getElementById('age-gate-month').value);
+            const day = parseInt(document.getElementById('age-gate-day').value);
+            const year = parseInt(document.getElementById('age-gate-year').value);
+
+            if (month && day && year) {
+              const birthDate = new Date(year, month - 1, day);
+              const age = calculateAge(birthDate);
+
+              if (age >= MINIMUM_AGE) {
+                setVerified();
+                hideAgeGate();
+              } else {
+                document.getElementById('age-gate-dob-error').style.display = 'block';
+              }
+            }
+          });
+        }
+
+        // Checkbox form handling
+        const checkboxForm = document.getElementById('age-gate-checkbox-form');
+        const checkbox = document.getElementById('age-gate-checkbox');
+        if (checkboxForm && checkbox) {
+          const submitBtn = checkboxForm.querySelector('button[type="submit"]');
+
+          checkbox.addEventListener('change', function() {
+            submitBtn.disabled = !this.checked;
+          });
+
+          checkboxForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            if (checkbox.checked) {
+              setVerified();
+              hideAgeGate();
+            }
+          });
+        }
+      });
+    })();
+  </script>
+{% endif %}

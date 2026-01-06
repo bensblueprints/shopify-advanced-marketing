@@ -8,75 +8,914 @@
     "theme_support_url": "https://amts.io/support"
   },
   {
-    "name": "t:general.typography",
+    "name": "Cannabis Theme Colors",
     "settings": [
       {
         "type": "header",
-        "content": "t:general.fonts"
+        "content": "Primary Colors"
+      },
+      {
+        "type": "color",
+        "id": "color_primary",
+        "label": "Primary Brand Color",
+        "default": "#10b981",
+        "info": "Main accent color used throughout the theme"
+      },
+      {
+        "type": "color",
+        "id": "color_secondary",
+        "label": "Secondary Color",
+        "default": "#059669"
+      },
+      {
+        "type": "color",
+        "id": "color_background",
+        "label": "Background Color",
+        "default": "#0f0f1a"
+      },
+      {
+        "type": "color",
+        "id": "color_background_secondary",
+        "label": "Secondary Background",
+        "default": "#1a1a2e",
+        "info": "Used for cards, sections, and containers"
+      },
+      {
+        "type": "color",
+        "id": "color_text",
+        "label": "Text Color",
+        "default": "#ffffff"
+      },
+      {
+        "type": "color",
+        "id": "color_text_muted",
+        "label": "Muted Text Color",
+        "default": "#9ca3af"
+      },
+      {
+        "type": "header",
+        "content": "Strain Type Colors"
+      },
+      {
+        "type": "paragraph",
+        "content": "These colors are used to identify different cannabis strain types throughout the theme."
+      },
+      {
+        "type": "color",
+        "id": "color_indica",
+        "label": "Indica Color",
+        "default": "#8b5cf6",
+        "info": "Purple - traditionally associated with Indica strains"
+      },
+      {
+        "type": "color",
+        "id": "color_sativa",
+        "label": "Sativa Color",
+        "default": "#f97316",
+        "info": "Orange - traditionally associated with Sativa strains"
+      },
+      {
+        "type": "color",
+        "id": "color_hybrid",
+        "label": "Hybrid Color",
+        "default": "#22c55e",
+        "info": "Green - used for Hybrid strains"
+      },
+      {
+        "type": "color",
+        "id": "color_cbd",
+        "label": "CBD Color",
+        "default": "#3b82f6",
+        "info": "Blue - used for CBD products"
+      },
+      {
+        "type": "color",
+        "id": "color_thca",
+        "label": "THCA Color",
+        "default": "#eab308",
+        "info": "Yellow/Gold - used for THCA products"
+      },
+      {
+        "type": "color",
+        "id": "color_delta9",
+        "label": "Delta-9 Hemp Color",
+        "default": "#06b6d4",
+        "info": "Cyan - used for Delta-9 Hemp products"
+      },
+      {
+        "type": "header",
+        "content": "Product Grade Colors"
+      },
+      {
+        "type": "color",
+        "id": "color_grade_budget",
+        "label": "Budget Grade Color",
+        "default": "#6b7280"
+      },
+      {
+        "type": "color",
+        "id": "color_grade_mid",
+        "label": "Mid-Tier Grade Color",
+        "default": "#10b981"
+      },
+      {
+        "type": "color",
+        "id": "color_grade_premium",
+        "label": "Premium Grade Color",
+        "default": "#f59e0b"
+      },
+      {
+        "type": "color",
+        "id": "color_grade_exotic",
+        "label": "Exotic Grade Color",
+        "default": "#ef4444"
+      },
+      {
+        "type": "header",
+        "content": "Button Colors"
+      },
+      {
+        "type": "color",
+        "id": "color_button_primary_bg",
+        "label": "Primary Button Background",
+        "default": "#10b981"
+      },
+      {
+        "type": "color",
+        "id": "color_button_primary_text",
+        "label": "Primary Button Text",
+        "default": "#ffffff"
+      },
+      {
+        "type": "color",
+        "id": "color_button_secondary_bg",
+        "label": "Secondary Button Background",
+        "default": "transparent"
+      },
+      {
+        "type": "color",
+        "id": "color_button_secondary_text",
+        "label": "Secondary Button Text",
+        "default": "#10b981"
+      }
+    ]
+  },
+  {
+    "name": "Typography",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Heading Font"
       },
       {
         "type": "font_picker",
-        "id": "type_primary_font",
-        "default": "work_sans_n4",
-        "label": "t:general.primary"
-      }
-    ]
-  },
-  {
-    "name": "t:general.layout",
-    "settings": [
+        "id": "type_heading_font",
+        "default": "poppins_n6",
+        "label": "Heading Font",
+        "info": "Used for headings throughout the theme"
+      },
+      {
+        "type": "range",
+        "id": "heading_font_size_scale",
+        "min": 80,
+        "max": 150,
+        "step": 5,
+        "unit": "%",
+        "label": "Heading Size Scale",
+        "default": 100
+      },
+      {
+        "type": "header",
+        "content": "Body Font"
+      },
+      {
+        "type": "font_picker",
+        "id": "type_body_font",
+        "default": "inter_n4",
+        "label": "Body Font",
+        "info": "Used for body text and descriptions"
+      },
+      {
+        "type": "range",
+        "id": "body_font_size",
+        "min": 14,
+        "max": 20,
+        "step": 1,
+        "unit": "px",
+        "label": "Base Body Font Size",
+        "default": 16
+      },
+      {
+        "type": "range",
+        "id": "body_line_height",
+        "min": 1.2,
+        "max": 2.0,
+        "step": 0.1,
+        "label": "Body Line Height",
+        "default": 1.6
+      },
+      {
+        "type": "header",
+        "content": "Navigation Font"
+      },
+      {
+        "type": "font_picker",
+        "id": "type_nav_font",
+        "default": "inter_n5",
+        "label": "Navigation Font"
+      },
       {
         "type": "select",
-        "id": "max_page_width",
-        "label": "t:labels.page_width",
+        "id": "nav_text_transform",
+        "label": "Navigation Text Transform",
         "options": [
-          {
-            "value": "90rem",
-            "label": "t:options.page_width.narrow"
-          },
-          {
-            "value": "110rem",
-            "label": "t:options.page_width.wide"
-          }
+          { "value": "none", "label": "None" },
+          { "value": "uppercase", "label": "Uppercase" },
+          { "value": "capitalize", "label": "Capitalize" }
         ],
-        "default": "90rem"
-      },
-      {
-        "type": "range",
-        "id": "min_page_margin",
-        "min": 10,
-        "max": 100,
-        "step": 1,
-        "unit": "px",
-        "label": "t:labels.page_margin",
-        "default": 20
+        "default": "uppercase"
       }
     ]
   },
   {
-    "name": "t:general.colors",
+    "name": "Age Verification",
     "settings": [
       {
-        "type": "color",
-        "id": "background_color",
-        "default": "#FFFFFF",
-        "label": "t:labels.background"
+        "type": "header",
+        "content": "Age Gate Settings"
       },
       {
-        "type": "color",
-        "id": "foreground_color",
-        "default": "#333333",
-        "label": "t:labels.foreground"
+        "type": "checkbox",
+        "id": "age_gate_enabled",
+        "label": "Enable Site-Wide Age Gate",
+        "default": true,
+        "info": "Require age verification before accessing the site"
+      },
+      {
+        "type": "select",
+        "id": "age_gate_type",
+        "label": "Verification Method",
+        "options": [
+          { "value": "simple", "label": "Simple Yes/No Buttons" },
+          { "value": "dob", "label": "Date of Birth Entry" },
+          { "value": "checkbox", "label": "Checkbox Confirmation" }
+        ],
+        "default": "simple"
       },
       {
         "type": "range",
-        "id": "input_corner_radius",
+        "id": "age_gate_minimum_age",
+        "min": 18,
+        "max": 25,
+        "step": 1,
+        "label": "Minimum Age Required",
+        "default": 21
+      },
+      {
+        "type": "range",
+        "id": "age_gate_cookie_days",
+        "min": 1,
+        "max": 365,
+        "step": 1,
+        "unit": "days",
+        "label": "Remember Verification For",
+        "default": 30,
+        "info": "Number of days to remember the visitor's verification"
+      },
+      {
+        "type": "header",
+        "content": "Age Gate Content"
+      },
+      {
+        "type": "image_picker",
+        "id": "age_gate_logo",
+        "label": "Age Gate Logo",
+        "info": "Displayed on the age verification modal"
+      },
+      {
+        "type": "text",
+        "id": "age_gate_heading",
+        "label": "Heading Text",
+        "default": "Age Verification Required"
+      },
+      {
+        "type": "textarea",
+        "id": "age_gate_message",
+        "label": "Verification Message",
+        "default": "You must be 21 years of age or older to view this website. By clicking 'Yes', you confirm that you are of legal age to purchase cannabis products in your state."
+      },
+      {
+        "type": "text",
+        "id": "age_gate_confirm_text",
+        "label": "Confirm Button Text",
+        "default": "Yes, I'm 21+"
+      },
+      {
+        "type": "text",
+        "id": "age_gate_deny_text",
+        "label": "Deny Button Text",
+        "default": "No, I'm Under 21"
+      },
+      {
+        "type": "url",
+        "id": "age_gate_deny_redirect",
+        "label": "Redirect URL for Denied Users",
+        "info": "Where to send visitors who are not of legal age"
+      },
+      {
+        "type": "header",
+        "content": "Age Gate Appearance"
+      },
+      {
+        "type": "color",
+        "id": "age_gate_overlay_color",
+        "label": "Overlay Background Color",
+        "default": "#0f0f1a"
+      },
+      {
+        "type": "range",
+        "id": "age_gate_overlay_opacity",
+        "min": 0.5,
+        "max": 1.0,
+        "step": 0.05,
+        "label": "Overlay Opacity",
+        "default": 0.95
+      },
+      {
+        "type": "color",
+        "id": "age_gate_modal_bg",
+        "label": "Modal Background Color",
+        "default": "#1a1a2e"
+      },
+      {
+        "type": "image_picker",
+        "id": "age_gate_background_image",
+        "label": "Background Image",
+        "info": "Optional background image for the age gate"
+      }
+    ]
+  },
+  {
+    "name": "Cannabis Product Display",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Product Card Settings"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_strain_badge",
+        "label": "Show Strain Type Badge",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "show_thc_percentage",
+        "label": "Show THC Percentage",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "show_cbd_percentage",
+        "label": "Show CBD Percentage",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "show_product_grade",
+        "label": "Show Product Grade Badge",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "show_effects_preview",
+        "label": "Show Effects Preview on Cards",
+        "default": true,
+        "info": "Display first 3 effects on product cards"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_quick_add",
+        "label": "Enable Quick Add to Cart",
+        "default": true
+      },
+      {
+        "type": "header",
+        "content": "Product Page Settings"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_terpene_profile",
+        "label": "Show Terpene Profile",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "show_flavor_notes",
+        "label": "Show Flavor Notes",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "show_lineage_info",
+        "label": "Show Strain Lineage",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "show_coa_modal",
+        "label": "Enable COA Modal",
+        "default": true,
+        "info": "Allow customers to view Certificate of Analysis"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_coa_download",
+        "label": "Enable COA PDF Download",
+        "default": true
+      },
+      {
+        "type": "header",
+        "content": "Potency Display"
+      },
+      {
+        "type": "select",
+        "id": "potency_display_style",
+        "label": "Potency Display Style",
+        "options": [
+          { "value": "text", "label": "Text Only" },
+          { "value": "badge", "label": "Badges" },
+          { "value": "bar", "label": "Progress Bars" },
+          { "value": "ring", "label": "Circular Gauges" }
+        ],
+        "default": "badge"
+      },
+      {
+        "type": "range",
+        "id": "thc_max_scale",
+        "min": 20,
+        "max": 50,
+        "step": 5,
+        "unit": "%",
+        "label": "THC Max Scale",
+        "default": 35,
+        "info": "Maximum THC percentage for progress bars/gauges"
+      }
+    ]
+  },
+  {
+    "name": "Compliance & Legal",
+    "settings": [
+      {
+        "type": "header",
+        "content": "FDA Disclaimer"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_fda_disclaimer",
+        "label": "Show FDA Disclaimer",
+        "default": true
+      },
+      {
+        "type": "textarea",
+        "id": "fda_disclaimer_text",
+        "label": "FDA Disclaimer Text",
+        "default": "These statements have not been evaluated by the Food and Drug Administration. These products are not intended to diagnose, treat, cure, or prevent any disease. Please consult with a healthcare professional before using any cannabis products."
+      },
+      {
+        "type": "header",
+        "content": "State Compliance"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_state_disclaimer",
+        "label": "Show State-Specific Disclaimer",
+        "default": true
+      },
+      {
+        "type": "textarea",
+        "id": "state_disclaimer_text",
+        "label": "State Disclaimer Text",
+        "default": "Cannabis products are intended for use only by adults 21 years of age or older. Laws vary by state - please verify that cannabis is legal in your area before purchasing. Keep out of reach of children and pets."
+      },
+      {
+        "type": "header",
+        "content": "Age Verification Notice"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_age_badge_footer",
+        "label": "Show 21+ Badge in Footer",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "age_badge_text",
+        "label": "Age Badge Text",
+        "default": "21+ ONLY"
+      },
+      {
+        "type": "header",
+        "content": "Legal Links"
+      },
+      {
+        "type": "url",
+        "id": "link_privacy_policy",
+        "label": "Privacy Policy URL"
+      },
+      {
+        "type": "url",
+        "id": "link_terms_of_service",
+        "label": "Terms of Service URL"
+      },
+      {
+        "type": "url",
+        "id": "link_refund_policy",
+        "label": "Refund Policy URL"
+      },
+      {
+        "type": "url",
+        "id": "link_shipping_policy",
+        "label": "Shipping Policy URL"
+      },
+      {
+        "type": "url",
+        "id": "link_lab_testing",
+        "label": "Lab Testing Info URL"
+      }
+    ]
+  },
+  {
+    "name": "Social Media",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Social Media Links"
+      },
+      {
+        "type": "paragraph",
+        "content": "Note: Some platforms restrict cannabis-related content. Consider using compliant platforms like Leafly, Weedmaps, or AllBud."
+      },
+      {
+        "type": "text",
+        "id": "social_instagram",
+        "label": "Instagram URL",
+        "info": "Note: Cannabis content may be restricted"
+      },
+      {
+        "type": "text",
+        "id": "social_twitter",
+        "label": "X (Twitter) URL"
+      },
+      {
+        "type": "text",
+        "id": "social_facebook",
+        "label": "Facebook URL",
+        "info": "Note: Cannabis advertising is prohibited"
+      },
+      {
+        "type": "text",
+        "id": "social_youtube",
+        "label": "YouTube URL"
+      },
+      {
+        "type": "text",
+        "id": "social_tiktok",
+        "label": "TikTok URL",
+        "info": "Note: Cannabis content may be restricted"
+      },
+      {
+        "type": "header",
+        "content": "Cannabis-Friendly Platforms"
+      },
+      {
+        "type": "text",
+        "id": "social_leafly",
+        "label": "Leafly URL"
+      },
+      {
+        "type": "text",
+        "id": "social_weedmaps",
+        "label": "Weedmaps URL"
+      },
+      {
+        "type": "text",
+        "id": "social_allbud",
+        "label": "AllBud URL"
+      }
+    ]
+  },
+  {
+    "name": "Layout & Spacing",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Page Layout"
+      },
+      {
+        "type": "select",
+        "id": "page_width",
+        "label": "Maximum Page Width",
+        "options": [
+          { "value": "1200px", "label": "Narrow (1200px)" },
+          { "value": "1400px", "label": "Standard (1400px)" },
+          { "value": "1600px", "label": "Wide (1600px)" },
+          { "value": "100%", "label": "Full Width" }
+        ],
+        "default": "1400px"
+      },
+      {
+        "type": "range",
+        "id": "page_padding",
+        "min": 16,
+        "max": 64,
+        "step": 8,
+        "unit": "px",
+        "label": "Page Side Padding",
+        "default": 24
+      },
+      {
+        "type": "header",
+        "content": "Section Spacing"
+      },
+      {
+        "type": "range",
+        "id": "section_spacing_desktop",
+        "min": 40,
+        "max": 120,
+        "step": 10,
+        "unit": "px",
+        "label": "Section Spacing (Desktop)",
+        "default": 80
+      },
+      {
+        "type": "range",
+        "id": "section_spacing_mobile",
+        "min": 20,
+        "max": 80,
+        "step": 10,
+        "unit": "px",
+        "label": "Section Spacing (Mobile)",
+        "default": 40
+      },
+      {
+        "type": "header",
+        "content": "Border Radius"
+      },
+      {
+        "type": "range",
+        "id": "border_radius_small",
         "min": 0,
+        "max": 16,
+        "step": 2,
+        "unit": "px",
+        "label": "Small Border Radius",
+        "default": 8,
+        "info": "Used for buttons, badges, inputs"
+      },
+      {
+        "type": "range",
+        "id": "border_radius_medium",
+        "min": 0,
+        "max": 24,
+        "step": 2,
+        "unit": "px",
+        "label": "Medium Border Radius",
+        "default": 12,
+        "info": "Used for cards, modals"
+      },
+      {
+        "type": "range",
+        "id": "border_radius_large",
+        "min": 0,
+        "max": 40,
+        "step": 4,
+        "unit": "px",
+        "label": "Large Border Radius",
+        "default": 20,
+        "info": "Used for sections, hero elements"
+      }
+    ]
+  },
+  {
+    "name": "Cart & Checkout",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Cart Settings"
+      },
+      {
+        "type": "select",
+        "id": "cart_type",
+        "label": "Cart Type",
+        "options": [
+          { "value": "drawer", "label": "Slide-out Drawer" },
+          { "value": "page", "label": "Dedicated Cart Page" },
+          { "value": "popup", "label": "Popup Modal" }
+        ],
+        "default": "drawer"
+      },
+      {
+        "type": "checkbox",
+        "id": "cart_show_recommendations",
+        "label": "Show Product Recommendations in Cart",
+        "default": true
+      },
+      {
+        "type": "header",
+        "content": "Cart Compliance"
+      },
+      {
+        "type": "checkbox",
+        "id": "cart_show_age_reminder",
+        "label": "Show Age Verification Reminder",
+        "default": true,
+        "info": "Display a reminder that products are for 21+ only"
+      },
+      {
+        "type": "text",
+        "id": "cart_age_reminder_text",
+        "label": "Age Reminder Text",
+        "default": "By proceeding, you confirm you are 21 years or older."
+      },
+      {
+        "type": "checkbox",
+        "id": "cart_show_potency_summary",
+        "label": "Show Potency Summary",
+        "default": true,
+        "info": "Display THC/CBD info for cart items"
+      }
+    ]
+  },
+  {
+    "name": "Notifications & Popups",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Add to Cart Notification"
+      },
+      {
+        "type": "select",
+        "id": "atc_notification_type",
+        "label": "Add to Cart Notification",
+        "options": [
+          { "value": "toast", "label": "Toast Notification" },
+          { "value": "drawer", "label": "Open Cart Drawer" },
+          { "value": "none", "label": "No Notification" }
+        ],
+        "default": "toast"
+      },
+      {
+        "type": "range",
+        "id": "toast_duration",
+        "min": 2,
         "max": 10,
         "step": 1,
-        "unit": "px",
-        "label": "t:labels.input_corner_radius",
+        "unit": "sec",
+        "label": "Toast Duration",
         "default": 4
+      },
+      {
+        "type": "header",
+        "content": "Newsletter Popup"
+      },
+      {
+        "type": "checkbox",
+        "id": "newsletter_popup_enabled",
+        "label": "Enable Newsletter Popup",
+        "default": false,
+        "info": "Display popup after age verification"
+      },
+      {
+        "type": "range",
+        "id": "newsletter_popup_delay",
+        "min": 0,
+        "max": 60,
+        "step": 5,
+        "unit": "sec",
+        "label": "Popup Delay",
+        "default": 15
+      },
+      {
+        "type": "text",
+        "id": "newsletter_popup_heading",
+        "label": "Popup Heading",
+        "default": "Get 10% Off Your First Order"
+      },
+      {
+        "type": "textarea",
+        "id": "newsletter_popup_text",
+        "label": "Popup Message",
+        "default": "Subscribe to our newsletter for exclusive deals, new strain drops, and cannabis education."
+      }
+    ]
+  },
+  {
+    "name": "Search & Filters",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Search Settings"
+      },
+      {
+        "type": "checkbox",
+        "id": "search_show_strain_type",
+        "label": "Show Strain Type in Search Results",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "search_show_potency",
+        "label": "Show THC/CBD in Search Results",
+        "default": true
+      },
+      {
+        "type": "header",
+        "content": "Collection Filters"
+      },
+      {
+        "type": "checkbox",
+        "id": "filter_strain_type",
+        "label": "Enable Strain Type Filter",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "filter_thc_range",
+        "label": "Enable THC Range Filter",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "filter_cbd_range",
+        "label": "Enable CBD Range Filter",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "filter_effects",
+        "label": "Enable Effects Filter",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "filter_product_grade",
+        "label": "Enable Product Grade Filter",
+        "default": true
+      },
+      {
+        "type": "select",
+        "id": "filter_layout",
+        "label": "Filter Layout (Desktop)",
+        "options": [
+          { "value": "sidebar", "label": "Sidebar" },
+          { "value": "horizontal", "label": "Horizontal Bar" },
+          { "value": "dropdown", "label": "Dropdowns" }
+        ],
+        "default": "sidebar"
+      }
+    ]
+  },
+  {
+    "name": "Performance",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Image Optimization"
+      },
+      {
+        "type": "checkbox",
+        "id": "lazy_load_images",
+        "label": "Enable Lazy Loading",
+        "default": true
+      },
+      {
+        "type": "select",
+        "id": "image_quality",
+        "label": "Image Quality",
+        "options": [
+          { "value": "low", "label": "Low (Faster Load)" },
+          { "value": "medium", "label": "Medium (Balanced)" },
+          { "value": "high", "label": "High (Best Quality)" }
+        ],
+        "default": "medium"
+      },
+      {
+        "type": "header",
+        "content": "Animation Settings"
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_animations",
+        "label": "Enable Animations",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "reduce_motion",
+        "label": "Respect Reduced Motion Preference",
+        "default": true,
+        "info": "Disable animations for users who prefer reduced motion"
       }
     ]
   }

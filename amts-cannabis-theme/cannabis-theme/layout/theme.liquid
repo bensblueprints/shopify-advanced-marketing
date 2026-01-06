@@ -32,5 +32,8 @@
     {{ content_for_layout }}
 
     {% sections 'footer-group' %}
+
+    {% comment %} Site-wide age verification gate {% endcomment %}
+    {% render 'age-gate' %}
   </body>
 </html>
