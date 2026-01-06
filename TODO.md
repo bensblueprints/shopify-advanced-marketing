@@ -59,8 +59,8 @@ Building a multi-vertical SaaS ecosystem with:
   - [x] Performance settings
 - [x] Site-wide age gate snippet with cookie persistence
 - [x] CSS variables system for theme customization
-- [ ] Cart drawer component
-- [ ] Announcement bar section
+- [x] Cart drawer component with cannabis product info
+- [x] Announcement bar section with multiple messages
 - [ ] Mobile optimization & testing
 - [ ] Cross-browser testing
 - [ ] Accessibility improvements (WCAG 2.1 AA)
