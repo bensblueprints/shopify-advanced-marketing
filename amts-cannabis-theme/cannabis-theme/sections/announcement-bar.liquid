@@ -1,0 +1,570 @@
+{% comment %}
+  Announcement Bar Section
+  Customizable announcement bar with multiple messages, auto-rotation,
+  and cannabis-specific styling options.
+{% endcomment %}
+
+{% if section.settings.show_announcement_bar %}
+  {% assign message_count = 0 %}
+  {% for block in section.blocks %}
+    {% if block.settings.message != blank %}
+      {% assign message_count = message_count | plus: 1 %}
+    {% endif %}
+  {% endfor %}
+
+  {% if message_count > 0 %}
+    <div
+      id="announcement-bar-{{ section.id }}"
+      class="announcement-bar"
+      data-section-id="{{ section.id }}"
+      style="
+        --announcement-bg: {{ section.settings.background_color }};
+        --announcement-text: {{ section.settings.text_color }};
+        --announcement-accent: {{ section.settings.accent_color }};
+        --announcement-height: {{ section.settings.bar_height }}px;
+      "
+    >
+      <div class="announcement-bar__container">
+        {% if section.settings.show_age_badge %}
+          <div class="announcement-bar__age-badge">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+            21+
+          </div>
+        {% endif %}
+
+        <div class="announcement-bar__messages {% if message_count > 1 %}announcement-bar__messages--carousel{% endif %}">
+          {% for block in section.blocks %}
+            {% if block.settings.message != blank %}
+              <div
+                class="announcement-bar__message {% if forloop.first %}is-active{% endif %}"
+                data-message-index="{{ forloop.index0 }}"
+                {{ block.shopify_attributes }}
+              >
+                {% if block.settings.icon != 'none' %}
+                  <span class="announcement-bar__icon">
+                    {% case block.settings.icon %}
+                      {% when 'truck' %}
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <rect x="1" y="3" width="15" height="13"/>
+                          <polygon points="16,8 20,8 23,11 23,16 16,16 16,8"/>
+                          <circle cx="5.5" cy="18.5" r="2.5"/>
+                          <circle cx="18.5" cy="18.5" r="2.5"/>
+                        </svg>
+                      {% when 'gift' %}
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <polyline points="20,12 20,22 4,22 4,12"/>
+                          <rect x="2" y="7" width="20" height="5"/>
+                          <line x1="12" y1="22" x2="12" y2="7"/>
+                          <path d="M12,7H7.5a2.5,2.5,0,0,1,0-5C11,2,12,7,12,7z"/>
+                          <path d="M12,7h4.5a2.5,2.5,0,0,0,0-5C13,2,12,7,12,7z"/>
+                        </svg>
+                      {% when 'percent' %}
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <line x1="19" y1="5" x2="5" y2="19"/>
+                          <circle cx="6.5" cy="6.5" r="2.5"/>
+                          <circle cx="17.5" cy="17.5" r="2.5"/>
+                        </svg>
+                      {% when 'clock' %}
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <circle cx="12" cy="12" r="10"/>
+                          <polyline points="12,6 12,12 16,14"/>
+                        </svg>
+                      {% when 'star' %}
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26 12,2"/>
+                        </svg>
+                      {% when 'leaf' %}
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/>
+                          <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/>
+                        </svg>
+                      {% when 'lab' %}
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M9 3h6"/>
+                          <path d="M10 9h4"/>
+                          <path d="M8 3v7l-4 8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2l-4-8V3"/>
+                        </svg>
+                      {% when 'shield' %}
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                          <path d="M9 12l2 2 4-4"/>
+                        </svg>
+                    {% endcase %}
+                  </span>
+                {% endif %}
+
+                <span class="announcement-bar__text">
+                  {% if block.settings.link != blank %}
+                    <a href="{{ block.settings.link }}" {% if block.settings.open_new_tab %}target="_blank" rel="noopener"{% endif %}>
+                      {{ block.settings.message }}
+                    </a>
+                  {% else %}
+                    {{ block.settings.message }}
+                  {% endif %}
+                </span>
+
+                {% if block.settings.cta_text != blank and block.settings.link != blank %}
+                  <a href="{{ block.settings.link }}" class="announcement-bar__cta" {% if block.settings.open_new_tab %}target="_blank" rel="noopener"{% endif %}>
+                    {{ block.settings.cta_text }}
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <line x1="5" y1="12" x2="19" y2="12"/>
+                      <polyline points="12,5 19,12 12,19"/>
+                    </svg>
+                  </a>
+                {% endif %}
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+
+        {% if message_count > 1 %}
+          <div class="announcement-bar__nav">
+            <button type="button" class="announcement-bar__nav-btn" data-prev aria-label="Previous announcement">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15,18 9,12 15,6"/>
+              </svg>
+            </button>
+            <button type="button" class="announcement-bar__nav-btn" data-next aria-label="Next announcement">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9,18 15,12 9,6"/>
+              </svg>
+            </button>
+          </div>
+        {% endif %}
+
+        {% if section.settings.show_close_button %}
+          <button type="button" class="announcement-bar__close" data-close aria-label="Close announcement bar">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"/>
+              <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        {% endif %}
+      </div>
+    </div>
+
+    <style>
+      .announcement-bar {
+        background-color: var(--announcement-bg);
+        color: var(--announcement-text);
+        min-height: var(--announcement-height);
+        display: flex;
+        align-items: center;
+        position: relative;
+        z-index: var(--z-fixed, 300);
+      }
+
+      .announcement-bar__container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        max-width: var(--page-width, 1400px);
+        margin: 0 auto;
+        padding: 0.5rem var(--page-padding, 24px);
+        width: 100%;
+      }
+
+      .announcement-bar__age-badge {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        padding: 0.25rem 0.5rem;
+        background-color: rgba(0, 0, 0, 0.2);
+        border-radius: var(--border-radius-small, 8px);
+        font-size: 0.75rem;
+        font-weight: 700;
+        white-space: nowrap;
+      }
+
+      .announcement-bar__messages {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex: 1;
+        overflow: hidden;
+      }
+
+      .announcement-bar__messages--carousel .announcement-bar__message {
+        position: absolute;
+        opacity: 0;
+        transform: translateY(10px);
+        pointer-events: none;
+        transition: opacity 0.3s ease, transform 0.3s ease;
+      }
+
+      .announcement-bar__messages--carousel .announcement-bar__message.is-active {
+        position: relative;
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: auto;
+      }
+
+      .announcement-bar__message {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        font-size: 0.875rem;
+        text-align: center;
+      }
+
+      .announcement-bar__icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--announcement-accent);
+      }
+
+      .announcement-bar__text a {
+        color: inherit;
+        text-decoration: none;
+        transition: opacity 0.2s ease;
+      }
+
+      .announcement-bar__text a:hover {
+        opacity: 0.8;
+        text-decoration: underline;
+      }
+
+      .announcement-bar__cta {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        padding: 0.25rem 0.75rem;
+        background-color: var(--announcement-accent);
+        color: var(--announcement-bg);
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-decoration: none;
+        border-radius: var(--border-radius-small, 8px);
+        white-space: nowrap;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      .announcement-bar__cta:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      }
+
+      .announcement-bar__nav {
+        display: flex;
+        gap: 0.25rem;
+      }
+
+      .announcement-bar__nav-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        background-color: rgba(255, 255, 255, 0.1);
+        border: none;
+        border-radius: var(--border-radius-small, 8px);
+        color: var(--announcement-text);
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+      }
+
+      .announcement-bar__nav-btn:hover {
+        background-color: rgba(255, 255, 255, 0.2);
+      }
+
+      .announcement-bar__close {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        background: none;
+        border: none;
+        color: var(--announcement-text);
+        opacity: 0.7;
+        cursor: pointer;
+        transition: opacity 0.2s ease;
+      }
+
+      .announcement-bar__close:hover {
+        opacity: 1;
+      }
+
+      /* Hide when dismissed */
+      .announcement-bar.is-hidden {
+        display: none;
+      }
+
+      /* Mobile responsive */
+      @media (max-width: 768px) {
+        .announcement-bar__container {
+          gap: 0.5rem;
+        }
+
+        .announcement-bar__message {
+          font-size: 0.75rem;
+        }
+
+        .announcement-bar__cta {
+          display: none;
+        }
+
+        .announcement-bar__age-badge {
+          font-size: 0.625rem;
+          padding: 0.125rem 0.375rem;
+        }
+      }
+    </style>
+
+    {% if message_count > 1 or section.settings.show_close_button %}
+      <script>
+        (function() {
+          const bar = document.getElementById('announcement-bar-{{ section.id }}');
+          if (!bar) return;
+
+          const messages = bar.querySelectorAll('.announcement-bar__message');
+          const messageCount = messages.length;
+          let currentIndex = 0;
+          let autoplayInterval;
+
+          // Auto-rotation
+          {% if section.settings.auto_rotate and message_count > 1 %}
+            const autoRotateSpeed = {{ section.settings.rotate_speed | default: 5 }} * 1000;
+
+            function startAutoplay() {
+              autoplayInterval = setInterval(function() {
+                showMessage((currentIndex + 1) % messageCount);
+              }, autoRotateSpeed);
+            }
+
+            function stopAutoplay() {
+              clearInterval(autoplayInterval);
+            }
+
+            startAutoplay();
+            bar.addEventListener('mouseenter', stopAutoplay);
+            bar.addEventListener('mouseleave', startAutoplay);
+          {% endif %}
+
+          // Show specific message
+          function showMessage(index) {
+            messages.forEach(function(msg, i) {
+              msg.classList.toggle('is-active', i === index);
+            });
+            currentIndex = index;
+          }
+
+          // Navigation buttons
+          const prevBtn = bar.querySelector('[data-prev]');
+          const nextBtn = bar.querySelector('[data-next]');
+
+          if (prevBtn) {
+            prevBtn.addEventListener('click', function() {
+              showMessage((currentIndex - 1 + messageCount) % messageCount);
+            });
+          }
+
+          if (nextBtn) {
+            nextBtn.addEventListener('click', function() {
+              showMessage((currentIndex + 1) % messageCount);
+            });
+          }
+
+          // Close button
+          const closeBtn = bar.querySelector('[data-close]');
+          if (closeBtn) {
+            closeBtn.addEventListener('click', function() {
+              bar.classList.add('is-hidden');
+              // Remember dismissal
+              {% if section.settings.remember_close %}
+                sessionStorage.setItem('announcement-dismissed-{{ section.id }}', 'true');
+              {% endif %}
+            });
+
+            // Check if previously dismissed
+            {% if section.settings.remember_close %}
+              if (sessionStorage.getItem('announcement-dismissed-{{ section.id }}')) {
+                bar.classList.add('is-hidden');
+              }
+            {% endif %}
+          }
+        })();
+      </script>
+    {% endif %}
+  {% endif %}
+{% endif %}
+
+{% schema %}
+{
+  "name": "Announcement Bar",
+  "tag": "section",
+  "class": "section-announcement-bar",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_announcement_bar",
+      "label": "Show announcement bar",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "#10b981"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent color",
+      "default": "#ffffff",
+      "info": "Used for icons and CTA buttons"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "bar_height",
+      "min": 32,
+      "max": 60,
+      "step": 4,
+      "unit": "px",
+      "label": "Bar height",
+      "default": 40
+    },
+    {
+      "type": "checkbox",
+      "id": "show_age_badge",
+      "label": "Show 21+ badge",
+      "default": true,
+      "info": "Display age verification badge for cannabis compliance"
+    },
+    {
+      "type": "header",
+      "content": "Rotation"
+    },
+    {
+      "type": "checkbox",
+      "id": "auto_rotate",
+      "label": "Auto-rotate messages",
+      "default": true,
+      "info": "Only applies when multiple messages are added"
+    },
+    {
+      "type": "range",
+      "id": "rotate_speed",
+      "min": 3,
+      "max": 10,
+      "step": 1,
+      "unit": "sec",
+      "label": "Rotation speed",
+      "default": 5
+    },
+    {
+      "type": "header",
+      "content": "Close Button"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_close_button",
+      "label": "Show close button",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "remember_close",
+      "label": "Remember dismissal",
+      "default": true,
+      "info": "Don't show again after visitor closes (until session ends)"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "message",
+      "name": "Message",
+      "settings": [
+        {
+          "type": "text",
+          "id": "message",
+          "label": "Message text",
+          "default": "Free shipping on orders over $50!"
+        },
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            { "value": "none", "label": "None" },
+            { "value": "truck", "label": "Shipping truck" },
+            { "value": "gift", "label": "Gift" },
+            { "value": "percent", "label": "Discount" },
+            { "value": "clock", "label": "Clock" },
+            { "value": "star", "label": "Star" },
+            { "value": "leaf", "label": "Leaf (Cannabis)" },
+            { "value": "lab", "label": "Lab testing" },
+            { "value": "shield", "label": "Shield (Verified)" }
+          ],
+          "default": "truck"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        },
+        {
+          "type": "text",
+          "id": "cta_text",
+          "label": "CTA button text",
+          "info": "Leave empty to hide button"
+        },
+        {
+          "type": "checkbox",
+          "id": "open_new_tab",
+          "label": "Open link in new tab",
+          "default": false
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Announcement Bar",
+      "blocks": [
+        {
+          "type": "message",
+          "settings": {
+            "message": "Free shipping on orders over $50!",
+            "icon": "truck"
+          }
+        },
+        {
+          "type": "message",
+          "settings": {
+            "message": "All products lab-tested for quality & purity",
+            "icon": "lab"
+          }
+        },
+        {
+          "type": "message",
+          "settings": {
+            "message": "New strain drops every Friday!",
+            "icon": "leaf"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

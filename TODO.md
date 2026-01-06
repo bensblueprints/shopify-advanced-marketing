@@ -35,21 +35,32 @@ Building a multi-vertical SaaS ecosystem with:
   - [x] COA modal viewer
 
 ### Week 3-4: Theme Sections & Templates
-- [ ] Update product template to use cannabis-info snippet
-- [ ] Create collection template with filter by strain type
-- [ ] Build homepage sections:
-  - [ ] Hero section with age gate
-  - [ ] Featured strains carousel
-  - [ ] Category grid (Flower, Edibles, Concentrates, etc.)
-  - [ ] Educational content blocks
-  - [ ] Lab results showcase
-  - [ ] Testimonials section
-- [ ] Create footer with compliance disclaimers
-- [ ] Add theme customizer settings:
-  - [ ] Color scheme (auto from logo)
-  - [ ] Font selections
-  - [ ] Age gate settings
-  - [ ] Announcement bar settings
+- [x] Update product template to use cannabis-info snippet
+- [x] Create collection template with filter by strain type
+- [x] Build homepage sections:
+  - [x] Hero section with age gate
+  - [x] Featured strains carousel
+  - [x] Category grid (Flower, Edibles, Concentrates, etc.)
+  - [x] Educational content blocks
+  - [x] Lab results showcase
+  - [x] Testimonials section
+- [x] Create footer with compliance disclaimers
+- [x] Add theme customizer settings:
+  - [x] Color scheme (strain types, grades, buttons)
+  - [x] Font selections (heading, body, nav)
+  - [x] Age gate settings (type, age, cookie, styling)
+  - [x] Cannabis product display settings
+  - [x] Compliance & legal settings
+  - [x] Social media links
+  - [x] Layout & spacing
+  - [x] Cart & checkout settings
+  - [x] Notifications & popups
+  - [x] Search & filters
+  - [x] Performance settings
+- [x] Site-wide age gate snippet with cookie persistence
+- [x] CSS variables system for theme customization
+- [ ] Cart drawer component
+- [ ] Announcement bar section
 - [ ] Mobile optimization & testing
 - [ ] Cross-browser testing
 - [ ] Accessibility improvements (WCAG 2.1 AA)
@@ -725,17 +736,25 @@ Building a multi-vertical SaaS ecosystem with:
 - Cannabis metafield definitions
 - Herbanbud-style mega menu
 - Cannabis info display snippet with COA modal
-- Age verification system
+- Age verification system (site-wide with settings)
+- Product template with cannabis-info integration
+- Collection template with strain type filtering
+- All homepage sections (hero, carousel, category grid, educational, lab results, testimonials)
+- Cannabis footer with compliance disclaimers
+- Comprehensive theme customizer settings
+- CSS variables system
+- Site-wide age gate with cookie persistence
 
 🚧 **In Progress:**
-- Product template customization
-- Collection filtering
-- Homepage sections
+- Cart drawer component
+- Announcement bar section
+- Mobile optimization
 
 ⏳ **Next Up:**
-- Backend FastAPI setup
-- Survey system development
-- AI integration
+- Cross-browser testing
+- Accessibility improvements
+- Performance optimization
+- Demo store for Shopify Theme Store
 
 ---
 
